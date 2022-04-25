@@ -33,7 +33,7 @@ fn main() {
     if features.is_empty() {
         panic!("You must set a storage provider.");
     }
-    
+
     if features.len() > 1 {
         panic!(
             "\
