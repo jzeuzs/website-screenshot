@@ -28,10 +28,11 @@ cfg_if! {
         mod tixte;
 
         pub use tixte::TixteProvider as Storage;
-    } else {
-        // Catch-all
-        mod fs;
+    } else if #[cfg(feature = "sled_storage")] {
+        mod sled;
 
-        pub use fs::FsProvider as Storage;
+        pub use self::sled::SledProvider as Storage;
+    } else {
+        panic!("Please provide a storage provider.");
     }
 }

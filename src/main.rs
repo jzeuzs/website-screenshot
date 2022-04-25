@@ -37,12 +37,11 @@ async fn main() -> anyhow::Result<()> {
     initialize_tracing();
 
     let driver_port = pick_unused_port().expect("No port available");
-    let driver_port_2 = driver_port.clone();
 
     tokio::spawn(async move {
         let mut chromedriver = Command::new("chromedriver");
         chromedriver.stdout(Stdio::piped()).stderr(Stdio::piped());
-        chromedriver.arg(format!("--port={driver_port_2}"));
+        chromedriver.arg(format!("--port={driver_port}"));
 
         let mut stream =
             ProcessLineStream::try_from(chromedriver).expect("Failed to convert command to stream");
@@ -68,7 +67,7 @@ async fn main() -> anyhow::Result<()> {
 
     capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
 
-    let mut client = ClientBuilder::native()
+    let mut client = ClientBuilder::rustls()
         .capabilities(capabilities)
         .connect(&format!("http://localhost:{driver_port}"))
         .await?;

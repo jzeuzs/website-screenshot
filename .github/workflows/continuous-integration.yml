@@ -1,0 +1,71 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  msrv:
+    name: MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2
+
+      - name: Setup | Rust
+        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Setup | Install cargo-msrv
+        run: cargo install cargo-msrv --no-default-features
+
+      - name: Build | Verify the MSRV
+        run: cargo msrv verify
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2
+
+      - name: Setup | Rust
+        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
+        with:
+          profile: minimal
+          toolchain: nightly
+          override: true
+
+      - name: Setup | Install rustfmt
+        run: rustup component add rustfmt
+
+      - name: Build | Lint
+        uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # tag=v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2
+
+      - name: Setup | Rust
+        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Setup | Install clippy
+        run: rustup component add clippy
+
+      - name: Build | Clippy
+        run: cargo clippy -- -D warnings
