@@ -48,9 +48,17 @@ See the [Releases page](https://github.com/devtomio/website-screenshot/releases)
 
 ### Docker
 
+**⚠️- You can't change the provider when using the docker image.**
+
 A dockerized version of this application is available [here](https://github.com/devtomio/website-screenshot/pkgs/container/website-screenshot).
 
-**⚠️- You can't change the provider when using the docker image.**
+### [Cargo](https://crates.io/crates/website-screenshot)
+
+Installing `website-screenshot` as a crate.
+
+```sh
+cargo install website-screenshot
+```
 
 ### Building from source
 
