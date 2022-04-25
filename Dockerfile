@@ -32,6 +32,7 @@ FROM base as builder
 
 COPY Cargo.lock .
 COPY Cargo.toml .
+COPY build.rs .
 
 RUN mkdir src && \
     echo "// blank" > src/lib.rs && \
