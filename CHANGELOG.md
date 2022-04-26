@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.1.1](https://github.com/devtomio/website-screenshot/compare/v0.1.0...v0.1.1) (2022-04-26)
+
+
+### Bug Fixes
+
+* also change install script ([fac46af](https://github.com/devtomio/website-screenshot/commit/fac46aff7ebfa7ac52cc8218368fc3adc7d43697))
+* remove `aarch64-pc-windows-msvc` ([a42c391](https://github.com/devtomio/website-screenshot/commit/a42c3914d09953011ddd1e59e67d816eb33d82e0))
+
 ## 0.1.0 (2022-04-25)
 
 
