@@ -27,6 +27,7 @@
 
 - `PORT` - the port that the application will run (optional, defaults to `3000`)
 - `REDIS_URL` - the address of your redis database (required)
+- `FULLSCREEN_SCREENSHOT` - if set, it will screenshot the whole website (optional)
 
 ### Railway
 

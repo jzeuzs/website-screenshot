@@ -12,13 +12,12 @@ use portpicker::pick_unused_port;
 use providers::{Provider, Storage};
 use serde_json::Map;
 use tokio::process::Command;
-use tokio::sync::Mutex;
-use tokio::time::{sleep, Duration};
 use tokio_process_stream::ProcessLineStream;
 use tokio_stream::StreamExt;
 use tracing_actix_web::TracingLogger;
 use util::{initialize_tracing, load_env};
 
+pub mod error;
 mod providers;
 mod routes;
 pub mod util;
@@ -27,7 +26,7 @@ pub type Result<T, E = Error> = anyhow::Result<T, E>;
 
 #[derive(Debug)]
 pub struct State {
-    pub browser: Arc<Mutex<Client>>,
+    pub browser: Arc<Client>,
     pub storage: Arc<Storage>,
 }
 
@@ -51,23 +50,21 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
-    sleep(Duration::from_secs(3)).await;
-
     let debug_port = pick_unused_port().expect("No port available");
     let mut capabilities = Map::new();
     let chrome_opts = serde_json::json!({
         "args": [
-            "--headless",
             "--disable-gpu",
             "--no-sandbox",
             "--disable-dev-shm-usage",
+            "--headless",
             format!("--remote-debugging-port={debug_port}")
         ]
     });
 
     capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
 
-    let mut client = ClientBuilder::rustls()
+    let client = ClientBuilder::rustls()
         .capabilities(capabilities)
         .connect(&format!("http://localhost:{driver_port}"))
         .await?;
@@ -81,7 +78,7 @@ async fn main() -> anyhow::Result<()> {
         .expect("Failed to build ratelimiter");
 
     let state = web::Data::new(State {
-        browser: Arc::new(Mutex::new(client.clone())),
+        browser: Arc::new(client.clone()),
         storage: Arc::new(Storage::new()),
     });
 
