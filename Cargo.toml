@@ -1,7 +1,7 @@
 [package]
 name = "website-screenshot"
 version = "0.2.0"
-rust-version = "1.60"
+rust-version = "1.62"
 authors = ["Tomio <mail@tomio.fun>"]
 license = "MIT/Apache-2.0"
 edition = "2021"
@@ -39,6 +39,7 @@ portpicker = "0.1.1"
 derive_more = "0.99.17"
 regress = "0.4.1"
 once_cell = "1.10.0"
+futures-util = "0.3.21"
 
 [dependencies.tokio]
 version = "1.18.0"

@@ -2397,6 +2397,7 @@ dependencies = [
  "derive_more",
  "dotenv",
  "fantoccini",
+ "futures-util",
  "once_cell",
  "portpicker",
  "redis",

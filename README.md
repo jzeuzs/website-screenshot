@@ -1,6 +1,6 @@
 # website-screenshot
 
-[![Rust: 1.60+](https://img.shields.io/badge/rust-1.60+-93450a)](https://blog.rust-lang.org/2022/04/07/Rust-1.60.0.html)
+[![Rust: 1.62+](https://img.shields.io/badge/rust-1.62+-93450a)](https://github.com/rust-lang/rust/milestone/93)
 [![Continuous Delivery](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-delivery.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-delivery.yml)
 [![Continuous Integration](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-integration.yml)
 
@@ -12,13 +12,14 @@
 - 🚀 blazing fast
 - 👮​​​‍‍​ built-in [ratelimiter](https://github.com/antifuchs/governor)
 - 👜 built-in [storage providers](#storage-providers)
+- 🛡️ built-in [authentication](#authentication)
 - 🗼 configurable
 
 ## Deployment
 
 ### Prerequisites
 
-- [Rust] 1.60+ or greater
+- [Rust] nightly 1.62+ or greater
 - [Redis] 6 or greater
 - [Chrome] browser
 - [Chromedriver] (must match with the version your [Chrome] browser)
@@ -65,6 +66,12 @@ cargo install website-screenshot
 
 1. Clone this repository. e.g. `git clone https://github.com/devtomio/website-screenshot`
 2. Build the binary `cargo build --release`
+
+### Authentication
+
+Authentication will be enabled if the `AUTH_TOKEN` variable is set.
+
+It will check if the `Authorization` header sent by the user is equal to the `AUTH_TOKEN` that you set.
 
 ## Storage Providers
 

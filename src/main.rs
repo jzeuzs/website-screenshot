@@ -1,3 +1,5 @@
+#![feature(let_chains)]
+
 #[macro_use]
 extern crate tracing;
 
@@ -6,6 +8,7 @@ use std::process::Stdio;
 use std::sync::Arc;
 
 use actix_governor::{Governor, GovernorConfigBuilder};
+use actix_web::middleware::Compress;
 use actix_web::{web, App, Error, HttpServer};
 use fantoccini::{Client, ClientBuilder};
 use portpicker::pick_unused_port;
@@ -18,8 +21,9 @@ use tracing_actix_web::TracingLogger;
 use util::{initialize_tracing, load_env};
 
 pub mod error;
-mod providers;
-mod routes;
+pub mod middlewares;
+pub mod providers;
+pub mod routes;
 pub mod util;
 
 pub type Result<T, E = Error> = anyhow::Result<T, E>;
@@ -89,6 +93,8 @@ async fn main() -> anyhow::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Compress::default())
+            .wrap(middlewares::Auth)
             .wrap(TracingLogger::default())
             .wrap(Governor::new(&governor_config))
             .app_data(state.clone())
