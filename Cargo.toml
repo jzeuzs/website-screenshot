@@ -1,6 +1,6 @@
 [package]
 name = "website-screenshot"
-version = "0.2.0"
+version = "1.0.0"
 rust-version = "1.62"
 authors = ["Tomio <mail@tomio.fun>"]
 license = "MIT/Apache-2.0"
