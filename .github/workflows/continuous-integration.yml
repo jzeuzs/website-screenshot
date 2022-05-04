@@ -18,14 +18,11 @@ jobs:
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: nightly-2022-05-04
           override: true
 
-      - name: Setup | Install cargo-msrv
-        run: cargo install cargo-msrv --no-default-features
-
       - name: Build | Verify the MSRV
-        run: cargo msrv verify
+        run: cargo build
 
   fmt:
     name: Rustfmt
