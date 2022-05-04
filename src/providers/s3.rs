@@ -5,7 +5,7 @@ use anyhow::Result;
 use async_trait::async_trait;
 use redis::{AsyncCommands, Client};
 use s3::creds::Credentials;
-use s3::Bucket;
+use s3::{Bucket, Region};
 
 use super::Provider;
 
@@ -33,13 +33,22 @@ impl Provider for S3Provider {
             },
         };
 
+        let region: Region = match env::var("S3_REGION") {
+            Ok(region) => region.parse().expect("Failed to parse s3 region"),
+            Err(_) => {
+                let endpoint = env::var("S3_ENDPOINT_URL").expect("Failed to load s3 endpoint url");
+
+                Region::Custom {
+                    region: "".to_owned(),
+                    endpoint,
+                }
+            },
+        };
+
         let bucket = Arc::new(
             Bucket::new(
                 &env::var("S3_BUCKET_NAME").expect("Failed to load s3 bucket name"),
-                env::var("S3_REGION")
-                    .expect("Failed to load s3 region")
-                    .parse()
-                    .expect("Failed to parse s3 region"),
+                region,
                 creds,
             )
             .expect("Failed to initialize s3 bucket"),

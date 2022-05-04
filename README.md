@@ -34,6 +34,15 @@
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/3ZVgSw?referralCode=tomio)
 
+#### Changing Providers
+
+To change the provider in railway:
+
+1. Open the repo that railway made for you.
+2. Open the [Dockerfile](./Dockerfile)
+3. Edit lines 39 and 44 with `fleet build --release --no-default-features --features <your_provider>`.
+4. Deploy your app again.
+
 ### Pre-built Binaries
 
 **⚠️- You can't change the provider when using the pre-built binaries.**
@@ -108,11 +117,15 @@ cargo build --release --no-default-features --features cloudinary_provider
 #### Environment Variables
 
 - `S3_BUCKET_NAME` - the name of your s3 bucket (required)
-- `S3_REGION` - the region of your s3 bucket (required)
+- `S3_REGION` - the region of your s3 bucket (required, only optional if using [self-hosted s3](#self-hosted-s3-storage))
 - `S3_ACCESS_KEY` - your access key (required)
 - `S3_SECRET_KEY` - your secret key (required)
 - `S3_SECURITY_TOKEN` - your security token (optional)
 - `S3_SESSION_TOKEN` - your session token (optional)
+
+#### Self-hosted S3 Storage
+
+To use a self-hosted S3 Storage, set the `S3_ENDPOINT_URL` environment variable to the endpoint url.
 
 #### Build Command
 
