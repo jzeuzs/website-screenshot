@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.0.0](https://github.com/devtomio/website-screenshot/compare/v0.1.1...v1.0.0) (2022-05-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* msrv is now nightly 1.62
+
+### Features
+
+* add auth ([39514ad](https://github.com/devtomio/website-screenshot/commit/39514add03c1aca0f7d7d1ed3216288364b21e2c))
+* add support for selfhosted s3 storage (closes [#9](https://github.com/devtomio/website-screenshot/issues/9)) ([da2c085](https://github.com/devtomio/website-screenshot/commit/da2c085340bc315ca32c30786c7a4d860461c8f8))
+* fullscreen screenshots ([22283d2](https://github.com/devtomio/website-screenshot/commit/22283d2a4ebfaa608c39912c3de37ac956e1ad08))
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#12](https://github.com/devtomio/website-screenshot/issues/12)) ([556fa91](https://github.com/devtomio/website-screenshot/commit/556fa9182761a357d1a10d2d948cef3c25d27c3a))
+* **deps:** update all non-major dependencies ([#14](https://github.com/devtomio/website-screenshot/issues/14)) ([120f706](https://github.com/devtomio/website-screenshot/commit/120f7062736ae858b4c69263f72cfcf65aca5008))
+
 ### [0.1.1](https://github.com/devtomio/website-screenshot/compare/v0.1.0...v0.1.1) (2022-04-26)
 
 
