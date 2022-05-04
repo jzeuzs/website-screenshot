@@ -76,7 +76,7 @@ cargo install website-screenshot
 1. Clone this repository. e.g. `git clone https://github.com/devtomio/website-screenshot`
 2. Build the binary `cargo build --release`
 
-### Authentication
+## Authentication
 
 Authentication will be enabled if the `AUTH_TOKEN` variable is set.
 
