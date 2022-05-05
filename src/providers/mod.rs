@@ -9,6 +9,7 @@ pub trait Provider {
 
     async fn get(&self, slug: String) -> Result<Vec<u8>>;
     async fn set(&self, slug: String, data: Vec<u8>) -> Result<()>;
+    async fn check(&self, slug: String) -> Result<bool>;
 }
 
 cfg_if! {

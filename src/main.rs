@@ -99,7 +99,7 @@ async fn main() -> anyhow::Result<()> {
             .wrap(Governor::new(&governor_config))
             .app_data(state.clone())
             .service(routes::screenshot_route)
-            .service(routes::get_route)
+            .service(routes::get_screenshot)
             .service(routes::index_route)
     })
     .bind(("0.0.0.0", port))?

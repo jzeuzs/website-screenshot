@@ -16,6 +16,8 @@ pub enum Error {
     MissingAuthToken,
     #[display(fmt = "Invalid token provided.")]
     Unauthorized,
+    #[display(fmt = "The screenshot with that slug can't be found.")]
+    ScreenshotNotFound,
 }
 
 impl ResponseError for Error {
@@ -29,6 +31,7 @@ impl ResponseError for Error {
         match self.deref() {
             Error::InvalidUrl | Error::MissingAuthToken => StatusCode::BAD_REQUEST,
             Error::Unauthorized => StatusCode::UNAUTHORIZED,
+            Error::ScreenshotNotFound => StatusCode::NOT_FOUND,
         }
     }
 }

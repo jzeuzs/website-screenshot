@@ -1,6 +1,6 @@
 [package]
 name = "website-screenshot"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["Tomio <mail@tomio.fun>"]
 license = "MIT/Apache-2.0"
 edition = "2021"

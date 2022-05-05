@@ -10,7 +10,10 @@ use sled::Db;
 use super::Provider;
 
 #[derive(Debug)]
-pub struct SledProvider(Arc<Client>, Arc<Db>);
+pub struct SledProvider {
+    redis: Arc<Client>,
+    db: Arc<Db>,
+}
 
 #[async_trait]
 impl Provider for SledProvider {
@@ -25,7 +28,10 @@ impl Provider for SledProvider {
                 .expect("Failed to open sled database"),
         );
 
-        Self(redis, db)
+        Self {
+            redis,
+            db,
+        }
     }
 
     #[inline]
@@ -34,20 +40,29 @@ impl Provider for SledProvider {
     }
 
     async fn get(&self, slug: String) -> Result<Vec<u8>> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let key: String = con.get(format!("{}:{slug}", SledProvider::prefix())).await?;
-        let data = self.1.get(key)?.expect("Failed to get data").as_ref().to_vec();
+        let data = self.db.get(key)?.expect("Failed to get data").as_ref().to_vec();
 
         Ok(data)
     }
 
     async fn set(&self, slug: String, data: Vec<u8>) -> Result<()> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let key = cuid()?;
 
         con.set(format!("{}:{slug}", SledProvider::prefix()), &key).await?;
-        self.1.insert(key, data)?;
+        self.db.insert(key, data)?;
 
         Ok(())
+    }
+
+    async fn check(&self, slug: String) -> Result<bool> {
+        let mut con = self.redis.get_async_connection().await?;
+
+        match con.get::<String, String>(format!("{}:{slug}", SledProvider::prefix())).await {
+            Ok(key) => Ok(self.db.contains_key(key)?),
+            Err(_) => Ok(false),
+        }
     }
 }

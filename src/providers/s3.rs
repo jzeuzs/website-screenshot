@@ -10,7 +10,10 @@ use s3::{Bucket, Region};
 use super::Provider;
 
 #[derive(Debug)]
-pub struct S3Provider(Arc<Client>, Arc<Bucket>);
+pub struct S3Provider {
+    redis: Arc<Client>,
+    bucket: Arc<Bucket>,
+}
 
 #[async_trait]
 impl Provider for S3Provider {
@@ -54,7 +57,10 @@ impl Provider for S3Provider {
             .expect("Failed to initialize s3 bucket"),
         );
 
-        Self(redis, bucket)
+        Self {
+            redis,
+            bucket,
+        }
     }
 
     #[inline]
@@ -63,20 +69,42 @@ impl Provider for S3Provider {
     }
 
     async fn get(&self, slug: String) -> Result<Vec<u8>> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let path: String = con.get(format!("{}:{slug}", S3Provider::prefix())).await?;
-        let (data, _) = self.1.get_object(path).await?;
+        let (data, _) = self.bucket.get_object(path).await?;
 
         Ok(data)
     }
 
     async fn set(&self, slug: String, data: Vec<u8>) -> Result<()> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let path = format!("{}.png", slug.clone());
 
-        self.1.put_object(&path, &data).await?;
+        self.bucket.put_object(&path, &data).await?;
         con.set(format!("{}:{slug}", S3Provider::prefix()), path).await?;
 
         Ok(())
+    }
+
+    async fn check(&self, slug: String) -> Result<bool> {
+        let mut con = self.redis.get_async_connection().await?;
+
+        match con.get::<String, String>(format!("{}:{slug}", S3Provider::prefix())).await {
+            Ok(path) => match self.bucket.head_object(path).await {
+                Ok((res, code)) => {
+                    if code >= 400 || code <= 599 {
+                        return Ok(false);
+                    }
+
+                    if res.content_type.is_none() || res.content_length.is_none() {
+                        return Ok(false);
+                    }
+
+                    Ok(true)
+                },
+                Err(_) => Ok(false),
+            },
+            Err(_) => Ok(false),
+        }
     }
 }

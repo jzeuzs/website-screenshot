@@ -13,7 +13,9 @@ use tokio::io::AsyncWriteExt;
 use super::Provider;
 
 #[derive(Debug)]
-pub struct FsProvider(Arc<Client>);
+pub struct FsProvider {
+    redis: Arc<Client>,
+}
 
 #[async_trait]
 impl Provider for FsProvider {
@@ -29,7 +31,9 @@ impl Provider for FsProvider {
                 .expect("Failed to open redis client"),
         );
 
-        Self(redis)
+        Self {
+            redis,
+        }
     }
 
     #[inline]
@@ -38,7 +42,7 @@ impl Provider for FsProvider {
     }
 
     async fn get(&self, slug: String) -> Result<Vec<u8>> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let path: String = con.get(format!("{}:{slug}", FsProvider::prefix())).await?;
         let contents = read(path).await?;
 
@@ -49,11 +53,24 @@ impl Provider for FsProvider {
         let file_name = format!("{}.png", slug);
         let file_path = format!("screenshots/{}", file_name);
         let mut file = File::create(&file_path).await?;
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
 
         file.write_all(&data).await?;
         con.set(format!("{}:{slug}", FsProvider::prefix()), file_path).await?;
 
         Ok(())
+    }
+
+    async fn check(&self, slug: String) -> Result<bool> {
+        let mut con = self.redis.get_async_connection().await?;
+
+        match con.get::<String, String>(format!("{}:{slug}", FsProvider::prefix())).await {
+            Ok(path) => {
+                let path = Path::new(&path);
+
+                Ok(path.exists() && path.is_file())
+            },
+            Err(_) => Ok(false),
+        }
     }
 }

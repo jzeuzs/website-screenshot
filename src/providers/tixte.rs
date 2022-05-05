@@ -13,7 +13,10 @@ use serde_json::Value;
 use super::Provider;
 
 #[derive(Debug)]
-pub struct TixteProvider(Arc<RedisClient>, Client);
+pub struct TixteProvider {
+    redis: Arc<RedisClient>,
+    reqwest: Client,
+}
 
 #[async_trait]
 impl Provider for TixteProvider {
@@ -23,9 +26,12 @@ impl Provider for TixteProvider {
                 .expect("Failed to open redis client"),
         );
 
-        let client = Client::new();
+        let reqwest = Client::new();
 
-        Self(redis, client)
+        Self {
+            redis,
+            reqwest,
+        }
     }
 
     #[inline]
@@ -34,15 +40,15 @@ impl Provider for TixteProvider {
     }
 
     async fn get(&self, slug: String) -> Result<Vec<u8>> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let url: String = con.get(format!("{}:{slug}", TixteProvider::prefix())).await?;
-        let data = self.1.get(url).send().await?.bytes().await?;
+        let data = self.reqwest.get(url).send().await?.bytes().await?;
 
         Ok(data.as_ref().to_vec())
     }
 
     async fn set(&self, slug: String, data: Vec<u8>) -> Result<()> {
-        let mut con = self.0.get_async_connection().await?;
+        let mut con = self.redis.get_async_connection().await?;
         let file = Part::bytes(data).mime_str("image/png")?.file_name(format!("{slug}.png"));
         let form = Form::new().part("file", file);
         let domain_conf = match &env::var("TIXTE_DOMAIN_CONFIG")
@@ -62,7 +68,7 @@ impl Provider for TixteProvider {
                 params.insert("random_name", false);
 
                 let res = self
-                    .1
+                    .reqwest
                     .post("https://api.tixte.com/v1/upload")
                     .multipart(form)
                     .query(&params)
@@ -88,7 +94,7 @@ impl Provider for TixteProvider {
                 params.insert("random", true);
 
                 let res = self
-                    .1
+                    .reqwest
                     .post("https://api.tixte.com/v1/upload")
                     .multipart(form)
                     .query(&params)
@@ -112,8 +118,27 @@ impl Provider for TixteProvider {
 
         Ok(())
     }
+
+    async fn check(&self, slug: String) -> Result<bool> {
+        let mut con = self.redis.get_async_connection().await?;
+
+        match con.get::<String, String>(format!("{}:{slug}", TixteProvider::prefix())).await {
+            Ok(url) => {
+                let req = self.reqwest.head(url).send().await?;
+                let status = req.status();
+
+                if status.is_client_error() && status.is_server_error() {
+                    return Ok(false);
+                } else {
+                    return Ok(true);
+                }
+            },
+            Err(_) => Ok(false),
+        }
+    }
 }
 
+#[derive(Debug)]
 enum DomainConfig {
     Standard(String),
     Random,
