@@ -9,6 +9,7 @@ use futures_util::future::LocalBoxFuture;
 
 use crate::error::Error as Errors;
 
+#[derive(Debug)]
 pub struct Auth;
 
 impl<S, B> Transform<S, ServiceRequest> for Auth
@@ -30,6 +31,7 @@ where
     }
 }
 
+#[derive(Debug)]
 pub struct AuthMiddleware<S> {
     service: S,
 }

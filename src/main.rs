@@ -1,4 +1,4 @@
-#![feature(let_chains)]
+#![feature(let_chains, pattern)]
 
 #[macro_use]
 extern crate tracing;
@@ -13,6 +13,7 @@ use actix_web::{web, App, Error, HttpServer};
 use fantoccini::{Client, ClientBuilder};
 use portpicker::pick_unused_port;
 use providers::{Provider, Storage};
+use reqwest::Client as ReqwestClient;
 use serde_json::Map;
 use tokio::process::Command;
 use tokio_process_stream::ProcessLineStream;
@@ -20,6 +21,7 @@ use tokio_stream::StreamExt;
 use tracing_actix_web::TracingLogger;
 use util::{initialize_tracing, load_env};
 
+pub mod cdp;
 pub mod error;
 pub mod middlewares;
 pub mod providers;
@@ -32,6 +34,7 @@ pub type Result<T, E = Error> = anyhow::Result<T, E>;
 pub struct State {
     pub browser: Arc<Client>,
     pub storage: Arc<Storage>,
+    pub reqwest: ReqwestClient,
 }
 
 #[actix_web::main]
@@ -84,6 +87,7 @@ async fn main() -> anyhow::Result<()> {
     let state = web::Data::new(State {
         browser: Arc::new(client.clone()),
         storage: Arc::new(Storage::new()),
+        reqwest: ReqwestClient::new(),
     });
 
     let port =

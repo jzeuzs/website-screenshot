@@ -8,7 +8,7 @@ use serde_json::json;
 
 use crate::error::Error;
 use crate::providers::Provider;
-use crate::util::check_if_url;
+use crate::util::{check_if_nsfw, check_if_url};
 use crate::{Result, State};
 
 #[inline]
@@ -16,11 +16,18 @@ fn default_fullscreen() -> bool {
     env::var("FULLSCREEN_SCREENSHOT").is_ok()
 }
 
+#[inline]
+fn default_check_nsfw() -> bool {
+    env::var("CHECK_IF_NSFW").is_ok()
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RequestData {
     url: String,
     #[serde(default = "default_fullscreen")]
     fullscreen: bool,
+    #[serde(default = "default_check_nsfw")]
+    check_nsfw: bool,
 }
 
 #[post("/screenshot")]
@@ -30,9 +37,21 @@ pub async fn screenshot(
 ) -> Result<HttpResponse, Error> {
     check_if_url(&payload.url).map_err(|_| Error::InvalidUrl)?;
 
+    let req =
+        data.reqwest.head(&payload.url).send().await.expect("Failed sending head request to url");
+    let url = req.url();
+
+    if payload.check_nsfw
+        && check_if_nsfw(url.host_str().expect("Failed getting url host"))
+            .await
+            .expect("Failed checking if nsfw")
+    {
+        return Err(Error::UrlNotSafeForWork);
+    }
+
     let client = &data.browser;
 
-    client.goto(&payload.url).await.expect("Failed navigating to site");
+    client.goto(url.as_str()).await.expect("Failed navigating to site");
     client.set_window_size(1980, 1080).await.expect("Failed setting window size");
     client
         .execute("document.body.style.overflow = 'hidden'", vec![])
@@ -87,7 +106,9 @@ pub async fn screenshot(
         "slug": &slug,
         "path": format!("/s/{}", &slug),
         "metadata": {
-            "url": payload.url
+            "url": &payload.url,
+            "fullscreen": payload.fullscreen,
+            "check_nsfw": payload.check_nsfw
         }
     })))
 }

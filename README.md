@@ -29,6 +29,7 @@
 - `PORT` - the port that the application will run (optional, defaults to `3000`)
 - `REDIS_URL` - the address of your redis database (required)
 - `FULLSCREEN_SCREENSHOT` - if set, it will screenshot the whole website (optional)
+- `CHECK_IF_NSFW` - if set, it will check if the url is marked as NSFW (optional)
 
 ### Railway
 
@@ -175,7 +176,11 @@ Hello, world!
 
 Creates a screenshot.
 
-JSON payload with the `url` key.
+#### Payload
+
+- `url` - The url of the website. (string, required)
+- `fullscreen` - If you want to take a fullscreen screenshot. (boolean, optional, overrides the `FULLSCREEN_SCREENSHOT` environment variable)
+- `check_nsfw` - If you want to check if the url is marked as NSFW. (boolean, optional, overrides the `CHECK_IF_NSFW` environment variable)
 
 Example Payload:
 
@@ -192,7 +197,9 @@ Example Response
   "slug": "abcdefghijk",
   "path": "/s/abcdefghijk",
   "metadata": {
-    "url": "https://rust-lang.org"
+    "url": "https://rust-lang.org",
+    "fullscreen": false,
+    "check_nsfw": false
   }
 }
 ```

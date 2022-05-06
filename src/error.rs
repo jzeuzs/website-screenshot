@@ -18,6 +18,8 @@ pub enum Error {
     Unauthorized,
     #[display(fmt = "The screenshot with that slug can't be found.")]
     ScreenshotNotFound,
+    #[display(fmt = "The url provided is marked as NSFW.")]
+    UrlNotSafeForWork,
 }
 
 impl ResponseError for Error {
@@ -32,6 +34,7 @@ impl ResponseError for Error {
             Error::InvalidUrl | Error::MissingAuthToken => StatusCode::BAD_REQUEST,
             Error::Unauthorized => StatusCode::UNAUTHORIZED,
             Error::ScreenshotNotFound => StatusCode::NOT_FOUND,
+            Error::UrlNotSafeForWork => StatusCode::FORBIDDEN,
         }
     }
 }
