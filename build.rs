@@ -1,6 +1,6 @@
 use version_check::Version;
 
-/// Get a list of features enabled.
+/// Get a list of the current features enabled.
 macro_rules! get_features {
     ($($feature:expr),*) => {
         vec![
