@@ -47,6 +47,7 @@ async fn main() -> anyhow::Result<()> {
     tokio::spawn(async move {
         let mut chromedriver = Command::new("chromedriver");
         chromedriver.stdout(Stdio::piped()).stderr(Stdio::piped());
+        chromedriver.arg("--whitelisted-ips=");
         chromedriver.arg(format!("--port={driver_port}"));
 
         let mut stream =
