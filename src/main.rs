@@ -66,6 +66,7 @@ async fn main() -> anyhow::Result<()> {
             "--no-sandbox",
             "--disable-dev-shm-usage",
             "--headless",
+            "--verbose", 
             "--remote-debugging-address=0.0.0.0",
             format!("--remote-debugging-port={debug_port}")
         ]
