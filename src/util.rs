@@ -1,3 +1,4 @@
+use std::env;
 use std::ops::Not;
 use std::path::Path;
 use std::str::pattern::{Pattern, SearchStep, Searcher};
@@ -88,6 +89,10 @@ pub fn initialize_tracing() {
         .finish();
 
     tracing::subscriber::set_global_default(subscriber).expect("Failed to initialize logger");
+}
+
+pub fn is_heroku() -> bool {
+    env::var("HEROKU").is_ok() || env::var("DYNO").is_ok()
 }
 
 pub async fn evaluate_on_new_document(client: &Client, js: String, args: Vec<Value>) {
