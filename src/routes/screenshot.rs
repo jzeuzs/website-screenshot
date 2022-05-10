@@ -54,7 +54,13 @@ pub async fn screenshot(
     client.goto(url.as_str()).await.expect("Failed navigating to site");
     client.set_window_size(1980, 1080).await.expect("Failed setting window size");
     client
-        .execute("document.body.style.overflow = 'hidden'", vec![])
+        .execute(
+            "\
+            document.body.style.overflowX = 'hidden';
+            document.body.style.overflowY = 'hidden';
+        ",
+            vec![],
+        )
         .await
         .expect("Failed hiding scrollbar");
 
