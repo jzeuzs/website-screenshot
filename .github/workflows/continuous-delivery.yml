@@ -90,7 +90,7 @@ jobs:
         run: |
           cd target/${{ matrix.target }}/release
           strip website-screenshot.exe
-          7z a ../../../${{ matrix.name }} website-screenshot.exe
+          7z a ../../../${{ matrix.name }} website-screenshot.exe ../../evasions
           cd -
 
       - name: Post Build | Prepare artifacts [-nix]
@@ -98,7 +98,7 @@ jobs:
         run: |
           cd target/${{ matrix.target }}/release
           strip website-screenshot || true
-          tar czvf ../../../${{ matrix.name }} website-screenshot
+          tar czvf ../../../${{ matrix.name }} website-screenshot ../../evasions
           cd -
 
       - name: Deploy | Upload artifacts
@@ -172,3 +172,17 @@ jobs:
           context: ./
           file: Dockerfile
           tags: ghcr.io/devtomio/website-screenshot:latest
+
+  deploy_heroku:
+    name: Deploy to Heroku
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+
+      - name: Deploy | Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          heroku_app_name: websitescreenshot
