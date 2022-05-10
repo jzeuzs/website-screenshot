@@ -40,11 +40,13 @@ RUN mkdir src && \
     rm -r src
 
 COPY src/ src/
+COPY evasions/ evasions/
 
 RUN fleet build --release
 
 FROM base as runner
 
 COPY --from=builder /usr/src/app/target/release/website-screenshot /usr/local/bin/website-screenshot
+COPY --from=builder /usr/src/app/evasions evasions/
 
 ENTRYPOINT ["/usr/local/bin/website-screenshot"]
