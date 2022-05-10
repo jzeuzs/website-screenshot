@@ -1,4 +1,4 @@
-msrv = "1.60"
+msrv = "1.62"
 cognitive-complexity-threshold = 20
 enum-variant-name-threshold = 1
 single-char-binding-names-threshold = 3

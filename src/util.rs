@@ -4,13 +4,17 @@ use std::str::pattern::{Pattern, SearchStep, Searcher};
 
 use anyhow::Result;
 use dotenv::dotenv;
+use fantoccini::Client;
 use once_cell::sync::OnceCell;
 use rayon::prelude::*;
 use regress::{Matches, Regex};
+use serde_json::{json, Value};
 use tokio::sync;
 use tracing::Level;
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::FmtSubscriber;
+
+use crate::cdp::ChromeCommand;
 
 static URL_REGEX: OnceCell<Regex> = OnceCell::new();
 static NSFW_SITE_LIST: sync::OnceCell<Vec<String>> = sync::OnceCell::const_new();
@@ -84,6 +88,21 @@ pub fn initialize_tracing() {
         .finish();
 
     tracing::subscriber::set_global_default(subscriber).expect("Failed to initialize logger");
+}
+
+pub async fn evaluate_on_new_document(client: &Client, js: String, args: Vec<Value>) {
+    let expr = format!(
+        "({js})({})",
+        args.into_iter().map(|arg| arg.to_string()).collect::<Vec<_>>().join(", ")
+    );
+
+    client
+        .issue_cmd(ChromeCommand::ExecuteCdpCommand(
+            "Page.addScriptToEvaluateOnNewDocument".to_owned(),
+            json!({ "source": expr }),
+        ))
+        .await
+        .expect("Failed issuing cmd");
 }
 
 pub struct RegexSearcher<'r, 't> {

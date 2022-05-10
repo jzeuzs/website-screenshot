@@ -87,7 +87,7 @@ It will check if the `Authorization` header sent by the user is equal to the `AU
 
 ### Fs (Filesystem) Provider
 
-*📝 - This is the default provider.*
+_📝 - This is the default provider._
 
 #### Build Command
 
@@ -97,7 +97,7 @@ cargo build --release
 
 ### [Cloudinary] Provider
 
-*📝 - You must make an unsigned upload preset.*
+_📝 - You must make an unsigned upload preset._
 
 #### Environment Variables
 
@@ -113,7 +113,7 @@ cargo build --release --no-default-features --features cloudinary_provider
 
 ### Amazon AWS [S3] Provider
 
-*⚠️ - This is untested. If you encounter a bug please don't hesitate to open an issue.*
+_⚠️ - This is untested. If you encounter a bug please don't hesitate to open an issue._
 
 #### Environment Variables
 
@@ -186,7 +186,7 @@ Example Payload:
 
 ```json
 {
-  "url": "https://rust-lang.org" 
+  "url": "https://rust-lang.org"
 }
 ```
 
