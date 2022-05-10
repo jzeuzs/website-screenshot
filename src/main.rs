@@ -4,10 +4,9 @@
 extern crate tracing;
 
 use std::process::Stdio;
-use std::time::Duration;
-use std::thread;
 use std::sync::Arc;
-use std::{env, fs};
+use std::time::Duration;
+use std::{env, fs, thread};
 
 use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_web::middleware::Compress;
