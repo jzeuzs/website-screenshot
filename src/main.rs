@@ -60,22 +60,30 @@ async fn main() -> anyhow::Result<()> {
 
     let debug_port = pick_unused_port().expect("No port available");
     let mut capabilities = Map::new();
-    let mut chrome_opts = serde_json::json!({
-        "args": [
-            "--disable-gpu",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--headless",
-            "--whitelisted-ips=",
-            "--remote-debugging-address=0.0.0.0",
-            format!("--remote-debugging-port={debug_port}")
-        ]
-    });
-
-    // Heroku (https://github.com/heroku/heroku-buildpack-google-chrome#selenium)
-    if let Value::Object(ref mut opts) = chrome_opts && let Ok(shim) = env::var("GOOGLE_CHROME_SHIM") {
-        opts.insert("binary".to_owned(), Value::String(shim));
-    }
+    let chrome_opts = if let Ok(shim) = env::var("GOOGLE_CHROME_SHIM") {
+        serde_json::json!({
+            "binary": shim,
+            "args": [
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--headless",
+                "--whitelisted-ips=",
+                format!("--remote-debugging-port={debug_port}")
+            ]
+        })
+    } else {
+        serde_json::json!({
+            "args": [
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--headless",
+                "--whitelisted-ips=",
+                format!("--remote-debugging-port={debug_port}")
+            ]
+        })
+    };
 
     capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
 
