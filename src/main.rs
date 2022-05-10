@@ -19,7 +19,7 @@ use tokio::process::Command;
 use tokio_process_stream::ProcessLineStream;
 use tokio_stream::StreamExt;
 use tracing_actix_web::TracingLogger;
-use util::{evaluate_on_new_document, initialize_tracing, is_heroku, load_env};
+use util::{evaluate_on_new_document, initialize_tracing, load_env};
 
 pub mod cdp;
 pub mod error;
@@ -37,23 +37,15 @@ pub struct State {
     pub reqwest: ReqwestClient,
 }
 
-static HEROKU_GOOGLE_CHROME_PATH: &str = "/app/.apt/usr/bin/google_chrome";
-static HEROKU_CHROMEDRIVER_PATH: &str = "/app/.chromedriver/bin/chromedriver";
-
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     load_env();
     initialize_tracing();
 
-    let is_heroku = is_heroku();
-
     tokio::spawn(async move {
         let path = match env::var("CHROMEDRIVER_PATH") {
             Ok(path) => path,
-            Err(_) => match is_heroku {
-                true => HEROKU_CHROMEDRIVER_PATH.to_owned(),
-                false => "chromedriver".to_owned(),
-            },
+            Err(_) => "chromedriver".to_owned(),
         };
 
         let mut chromedriver = Command::new(path);
@@ -79,27 +71,15 @@ async fn main() -> anyhow::Result<()> {
                 "--whitelisted-ips="
             ]
         }),
-        Err(_) => match is_heroku {
-            true => serde_json::json!({
-                "binary": HEROKU_GOOGLE_CHROME_PATH,
-                "args": [
-                    "--disable-gpu",
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--headless",
-                    "--whitelisted-ips="
-                ]
-            }),
-            false => serde_json::json!({
-                "args": [
-                    "--disable-gpu",
-                    "--no-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--headless",
-                    "--whitelisted-ips="
-                ]
-            }),
-        },
+        Err(_) => serde_json::json!({
+            "args": [
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--headless",
+                "--whitelisted-ips="
+            ]
+        }),
     };
 
     capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);

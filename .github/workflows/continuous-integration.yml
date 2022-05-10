@@ -21,7 +21,7 @@ jobs:
           toolchain: nightly-2022-05-04
           override: true
 
-      - name: Build | Verify the MSRV
+      - name: Check | Verify the MSRV
         run: cargo build
 
   fmt:
@@ -41,7 +41,7 @@ jobs:
       - name: Setup | Install rustfmt
         run: rustup component add rustfmt
 
-      - name: Build | Lint
+      - name: Check | Lint
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # tag=v1
         with:
           command: fmt
@@ -64,5 +64,15 @@ jobs:
       - name: Setup | Install clippy
         run: rustup component add clippy
 
-      - name: Build | Clippy
+      - name: Check | Clippy
         run: cargo clippy -- -D warnings
+
+  dprint:
+    name: Dprint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup | Checkout
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+
+      - name: Check | Dprint
+        uses: dprint/check@v2.0
