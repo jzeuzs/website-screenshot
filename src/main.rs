@@ -4,6 +4,8 @@
 extern crate tracing;
 
 use std::process::Stdio;
+use std::time::Duration;
+use std::thread;
 use std::sync::Arc;
 use std::{env, fs};
 
@@ -58,6 +60,9 @@ async fn main() -> anyhow::Result<()> {
             info!(target: "chromedriver", "{}", log);
         }
     });
+
+    // Chromedriver may take a while to start
+    thread::sleep(Duration::from_secs(3));
 
     let mut capabilities = Map::new();
     let chrome_opts = match env::var("GOOGLE_CHROME_PATH") {
