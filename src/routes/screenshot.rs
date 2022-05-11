@@ -6,6 +6,7 @@ use fantoccini::Locator;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use crate::cdp::ChromeCommand;
 use crate::error::Error;
 use crate::providers::Provider;
 use crate::util::{check_if_nsfw, check_if_url};
@@ -21,6 +22,11 @@ fn default_check_nsfw() -> bool {
     env::var("CHECK_IF_NSFW").is_ok()
 }
 
+#[inline]
+fn default_dark_mode() -> bool {
+    env::var("DARK_MODE").is_ok()
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RequestData {
     url: String,
@@ -28,6 +34,8 @@ pub struct RequestData {
     fullscreen: bool,
     #[serde(default = "default_check_nsfw")]
     check_nsfw: bool,
+    #[serde(default = "default_dark_mode")]
+    dark_mode: bool,
 }
 
 #[post("/screenshot")]
@@ -63,6 +71,40 @@ pub async fn screenshot(
         )
         .await
         .expect("Failed hiding scrollbar");
+
+    if payload.dark_mode {
+        client
+            .issue_cmd(ChromeCommand::ExecuteCdpCommand(
+                "Emulation.setEmulatedMedia".to_owned(),
+                json!({
+                    "features": [
+                        {
+                            "name": "prefers-color-scheme",
+                            "value": "dark"
+                        }
+                    ]
+                }),
+            ))
+            .await
+            .expect("Failed issuing cmd");
+    } else {
+        client
+            .issue_cmd(ChromeCommand::ExecuteCdpCommand(
+                "Emulation.setEmulatedMedia".to_owned(),
+                json!({
+                    "features": [
+                        {
+                            "name": "prefers-color-scheme",
+                            "value": "light"
+                        }
+                    ]
+                }),
+            ))
+            .await
+            .expect("Failed issuing cmd");
+    }
+
+    client.refresh().await.expect("Failed to refresh");
 
     let screenshot = match payload.fullscreen {
         true => {

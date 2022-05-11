@@ -207,7 +207,7 @@ detect_platform() {
     # use the statically compiled musl bins on linux to avoid linking issues.
     linux) platform="unknown-linux-musl" ;;
     darwin) platform="apple-darwin" ;;
-    freebsd) platform="unknown-freebsd" ;;
+    # freebsd) platform="unknown-freebsd" ;;
   esac
 
   printf '%s' "${platform}"

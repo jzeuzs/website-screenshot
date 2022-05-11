@@ -18,8 +18,8 @@ fn main() {
         None => Version::parse("1.0.0").unwrap().to_mmp(),
     };
 
-    if version.0 != 1 && version.1 < 60 {
-        panic!("Minimum rust version required is 1.60, please update your rust version via `rustup update`.");
+    if version.0 != 1 && version.1 < 62 {
+        panic!("Minimum rust version required is nightly 1.62, please update your rust version via `rustup update`.");
     }
 
     let features = get_features!(

@@ -32,6 +32,7 @@
 - `CHECK_IF_NSFW` - if set, it will check if the url is marked as NSFW (optional)
 - `GOOGLE_CHROME_PATH` - the path to the chrome executable (optional)
 - `CHROMEDRIVER_PATH` - the path to the chromedriver executable (optional)
+- `DARK_MODE` - if set, it will take screenshots in dark mode, if the website supports it (optional)
 
 ### Railway
 

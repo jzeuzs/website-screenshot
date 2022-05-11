@@ -90,7 +90,7 @@ jobs:
         run: |
           cd target/${{ matrix.target }}/release
           strip website-screenshot.exe
-          7z a ../../../${{ matrix.name }} website-screenshot.exe ../../evasions
+          7z a ../../../${{ matrix.name }} website-screenshot.exe
           cd -
 
       - name: Post Build | Prepare artifacts [-nix]
@@ -98,7 +98,7 @@ jobs:
         run: |
           cd target/${{ matrix.target }}/release
           strip website-screenshot || true
-          tar czvf ../../../${{ matrix.name }} website-screenshot ../../evasions
+          tar czvf ../../../${{ matrix.name }} website-screenshot
           cd -
 
       - name: Deploy | Upload artifacts

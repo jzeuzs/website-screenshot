@@ -1,3 +1,5 @@
+use std::ops::Not;
+
 use actix_web::http::header;
 use actix_web::{get, web, HttpResponse};
 
@@ -10,7 +12,7 @@ pub async fn get_screenshot(
     data: web::Data<State>,
     slug: web::Path<String>,
 ) -> Result<HttpResponse, Error> {
-    if let false = data.storage.check(slug.clone()).await.expect("Failed checking slug") {
+    if data.storage.check(slug.clone()).await.expect("Failed checking slug").not() {
         return Err(Error::ScreenshotNotFound);
     }
 

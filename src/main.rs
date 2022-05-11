@@ -3,15 +3,15 @@
 #[macro_use]
 extern crate tracing;
 
+use std::env;
 use std::process::Stdio;
 use std::sync::Arc;
-use std::time::Duration;
-use std::{env, fs, thread};
 
 use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_web::middleware::Compress;
 use actix_web::{web, App, Error, HttpServer};
 use cdp::ChromeCommand;
+use evasions::*;
 use fantoccini::{Client, ClientBuilder};
 use providers::{Provider, Storage};
 use reqwest::Client as ReqwestClient;
@@ -20,10 +20,11 @@ use tokio::process::Command;
 use tokio_process_stream::ProcessLineStream;
 use tokio_stream::StreamExt;
 use tracing_actix_web::TracingLogger;
-use util::{evaluate_on_new_document, initialize_tracing, load_env};
+use util::{initialize_tracing, load_env};
 
 pub mod cdp;
 pub mod error;
+pub mod evasions;
 pub mod middlewares;
 pub mod providers;
 pub mod routes;
@@ -60,9 +61,6 @@ async fn main() -> anyhow::Result<()> {
         }
     });
 
-    // Chromedriver may take a while to start
-    thread::sleep(Duration::from_secs(3));
-
     let mut capabilities = Map::new();
     let chrome_opts = match env::var("GOOGLE_CHROME_PATH") {
         Ok(path) => serde_json::json!({
@@ -95,62 +93,31 @@ async fn main() -> anyhow::Result<()> {
 
     // To hide headless nature (for Cloudflare, etc.)
     tokio::join!(
-        evaluate_on_new_document(&client, fs::read_to_string("evasions/utils.js")?, vec![]),
-        evaluate_on_new_document(&client, fs::read_to_string("evasions/chrome.app.js")?, vec![]),
-        evaluate_on_new_document(&client, fs::read_to_string("evasions/chrome.csi.js")?, vec![]),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/chrome.loadTimes.js")?,
-            vec![]
-        ),
-        evaluate_on_new_document(&client, fs::read_to_string("evasions/chrome.runtime.js")?, vec![
-            Value::Bool(false)
-        ]),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/iframe.contentWindow.js")?,
-            vec![]
-        ),
-        evaluate_on_new_document(&client, fs::read_to_string("evasions/media.codecs.js")?, vec![]),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/navigator.hardwareConcurrency.js")?,
-            vec![Value::Number(4.into())]
-        ),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/navigator.languages.js")?,
-            vec![Value::Array(vec!["en-US".into(), "en".into()])]
-        ),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/navigator.permissions.js")?,
-            vec![]
-        ),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/navigator.plugins.js")?,
-            vec![]
-        ),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/navigator.vendor.js")?,
-            vec![Value::String("Google Inc.".to_owned())]
-        ),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/navigator.webdriver.js")?,
-            vec![]
-        ),
-        evaluate_on_new_document(&client, fs::read_to_string("evasions/webgl.vendor.js")?, vec![
+        evaluate_on_new_document(&client, UTILS, vec![]),
+        evaluate_on_new_document(&client, CHROME_APP, vec![]),
+        evaluate_on_new_document(&client, CHROME_CSI, vec![]),
+        evaluate_on_new_document(&client, CHROME_LOADTIMES, vec![]),
+        evaluate_on_new_document(&client, CHROME_RUNTIME, vec![Value::Bool(false)]),
+        evaluate_on_new_document(&client, IFRAME_CONTENTWINDOW, vec![]),
+        evaluate_on_new_document(&client, MEDIA_CODECS, vec![]),
+        evaluate_on_new_document(&client, NAVIGATOR_HARDWARECONCURRENCY, vec![Value::Number(
+            4.into()
+        )]),
+        evaluate_on_new_document(&client, NAVIGATOR_LANGUAGES, vec![Value::Array(vec![
+            "en-US".into(),
+            "en".into()
+        ])]),
+        evaluate_on_new_document(&client, NAVIGATOR_PERMISSIONS, vec![]),
+        evaluate_on_new_document(&client, NAVIGATOR_PLUGINS, vec![]),
+        evaluate_on_new_document(&client, NAVIGATOR_VENDOR, vec![Value::String(
+            "Google Inc.".to_owned()
+        )]),
+        evaluate_on_new_document(&client, NAVIGATOR_WEBDRIVER, vec![]),
+        evaluate_on_new_document(&client, WEBGL_VENDOR, vec![
             Value::String("Intel Inc.".to_owned()),
             Value::String("Intel Iris OpenGL Engine".to_owned())
         ]),
-        evaluate_on_new_document(
-            &client,
-            fs::read_to_string("evasions/window.outerdimensions.js")?,
-            vec![]
-        ),
+        evaluate_on_new_document(&client, WINDOW_OUTERDIMENSIONS, vec![]),
     );
 
     // Override user-agent
