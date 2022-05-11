@@ -7,41 +7,87 @@ on:
   pull_request:
 
 jobs:
+  test:
+    name: Integration Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        name:
+          - MSRV
+          - Nightly
+          - MacOS
+          - Windows
+        
+        include:
+          - name: MSRV
+            toolchain: nightly-2022-05-04
+            os: ubuntu-latest
+
+          - name: Nightly
+            toolchain: nightly
+            os: ubuntu-latest
+
+          - name: MacOS
+            toolchain: nightly-2022-05-04
+            os: macOS-latest
+
+          - name: Windows
+            toolchain: nightly-2022-05-04
+            os: windows-latest
+
+    steps:
+      - name: Checkout the Repository
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.toolchain }}
+          override: true
+
+      - name: Install Nextest
+        uses: taiki-e/install-action@nextest
+
+      - name: Run Tests
+        run: cargo nextest run
+
   msrv:
     name: MSRV
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Setup | Rust
+      - name: Install Rust
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           profile: minimal
           toolchain: nightly-2022-05-04
           override: true
 
-      - name: Check | Verify the MSRV
+      - name: Verify the MSRV
         run: cargo build
 
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Setup | Rust
+      - name: Install Rust
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           profile: minimal
           toolchain: nightly
           override: true
 
-      - name: Setup | Install rustfmt
+      - name: Install rustfmt
         run: rustup component add rustfmt
 
-      - name: Check | Lint
+      - name: Run rustfmt
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # tag=v1
         with:
           command: fmt
@@ -51,28 +97,28 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Setup | Rust
+      - name: Install Rust
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           profile: minimal
           toolchain: nightly
           override: true
 
-      - name: Setup | Install clippy
+      - name: Install clippy
         run: rustup component add clippy
 
-      - name: Check | Clippy
+      - name: Run clippy
         run: cargo clippy -- -D warnings
 
   dprint:
     name: Dprint
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Check | Dprint
+      - name: Run Dprint
         uses: dprint/check@22f4fe0ab3ac8ce823e23e43043333fc46b76e04 # tag=v2.0

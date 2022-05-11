@@ -184,6 +184,7 @@ Creates a screenshot.
 - `url` - The url of the website. (string, required)
 - `fullscreen` - If you want to take a fullscreen screenshot. (boolean, optional, overrides the `FULLSCREEN_SCREENSHOT` environment variable)
 - `check_nsfw` - If you want to check if the url is marked as NSFW. (boolean, optional, overrides the `CHECK_IF_NSFW` environment variable)
+- `dark_mode` - If you want to take a screenshot in dark mode if the website supports it. (boolean, optional, overrides the `DARK_MODE` environment variable)
 
 Example Payload:
 

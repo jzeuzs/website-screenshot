@@ -156,7 +156,8 @@ pub async fn screenshot(
         "metadata": {
             "url": &payload.url,
             "fullscreen": payload.fullscreen,
-            "check_nsfw": payload.check_nsfw
+            "check_nsfw": payload.check_nsfw,
+            "dark_mode": payload.dark_mode
         }
     })))
 }

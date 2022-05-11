@@ -67,10 +67,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Setup | Rust
+      - name: Install Rust
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1.0.7
         with:
           toolchain: nightly
@@ -78,14 +78,14 @@ jobs:
           profile: minimal
           target: ${{ matrix.target }}
 
-      - name: Build | Build
+      - name: Build the binary
         uses: actions-rs/cargo@844f36862e911db73fe0815f00a4a2602c279505 # tag=v1.0.3
         with:
           command: build
           args: --release --locked --target ${{ matrix.target }}
           use-cross: ${{ matrix.os == 'ubuntu-latest' }}
 
-      - name: Post Build | Prepare artifacts [Windows]
+      - name: Prepare artifacts [Windows]
         if: matrix.os == 'windows-latest'
         run: |
           cd target/${{ matrix.target }}/release
@@ -93,7 +93,7 @@ jobs:
           7z a ../../../${{ matrix.name }} website-screenshot.exe
           cd -
 
-      - name: Post Build | Prepare artifacts [-nix]
+      - name: Prepare artifacts [-nix]
         if: matrix.os != 'windows-latest'
         run: |
           cd target/${{ matrix.target }}/release
@@ -101,7 +101,7 @@ jobs:
           tar czvf ../../../${{ matrix.name }} website-screenshot
           cd -
 
-      - name: Deploy | Upload artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3
         with:
           name: ${{ matrix.name }}
@@ -112,18 +112,18 @@ jobs:
     needs: [release_please, github_build]
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
         with:
           fetch-depth: 0
 
-      - name: Setup | Artifacts
+      - name: Download the artifacts
         uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
 
-      - name: Setup | Checksums
+      - name: Setup the Checksums
         run: for file in website-screenshot-*/website-screenshot-*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
 
-      - name: Build | Add Artifacts to Release
+      - name: Add Artifacts to Release
         uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5 # tag=v1
         with:
           files: website-screenshot-*/website-screenshot-*
@@ -135,37 +135,37 @@ jobs:
     needs: release_please
     if: ${{ needs.release_please.outputs.release_created == 'true' }}
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Setup | Rust
+      - name: Install Rust
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1.0.7
         with:
           toolchain: nightly
           profile: minimal
           override: true
 
-      - name: Build | Publish
+      - name: Publish to crates.io
         run: cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
 
   publish_docker:
-    name: Publish website-screenshot image to container registries
+    name: Publish website-screenshot image
     runs-on: ubuntu-latest
     steps:
-      - name: Setup | Checkout
+      - name: Checkout the Repository
         uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
 
-      - name: Setup | Docker Buildx
+      - name: Setup Docker
         uses: docker/setup-buildx-action@dc7b9719a96d48369863986a06765841d7ea23f6 # tag=v2.0.0
 
-      - name: Build | Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b # tag=v2.0.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build | Push Docker Image
+      - name: Push Docker Image
         uses: docker/build-push-action@e551b19e49efd4e98792db7592c17c09b89db8d8 # tag=v3.0.0
         with:
           push: true
