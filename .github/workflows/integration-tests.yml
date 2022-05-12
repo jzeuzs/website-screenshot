@@ -52,9 +52,8 @@ jobs:
 
       - name: Install Scoop [Windows]
         if: matrix.os == 'windows-latest'
-        uses: MinoruSekine/setup-scoop@v1
-        with:
-          add_extras_bucket: 'true'
+        shell: pwsh
+        run: Invoke-WebRequest get.scoop.sh | Invoke-Expression
 
       - name: Install Redis [Windows]
         if: matrix.os == 'windows-latest'
