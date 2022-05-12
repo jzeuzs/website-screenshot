@@ -50,7 +50,18 @@ jobs:
       - name: Install Nextest
         uses: taiki-e/install-action@nextest
 
-      - name: Install Redis
+      - name: Install Scoop [Windows]
+        if: matrix.os == 'windows-latest'
+        uses: MinoruSekine/setup-scoop@v1
+        with:
+          add_extras_bucket: 'true'
+
+      - name: Install Redis [Windows]
+        if: matrix.os == 'windows-latest'
+        run: scoop install redis
+
+      - name: Install Redis [-nix]
+        if: matrix.os != 'windows-latest'
         uses: shogo82148/actions-setup-redis@v1
         with:
           redis-version: 6.x
@@ -61,7 +72,15 @@ jobs:
       - name: Install Chromedriver
         uses: nanasess/setup-chromedriver@v1
 
-      - name: Run Tests
+      - name: Run Tests [Windows]
+        run: |
+          redis-server &
+          chromedriver &
+          cargo nextest run
+        env:
+          REDIS_URL: redis://127.0.0.1:6379
+
+      - name: Run Tests [-nix]
         run: |
           chromedriver &
           cargo nextest run
