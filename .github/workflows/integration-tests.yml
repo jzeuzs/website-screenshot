@@ -53,7 +53,9 @@ jobs:
       - name: Install Scoop [Windows]
         if: matrix.os == 'windows-latest'
         shell: pwsh
-        run: Invoke-WebRequest get.scoop.sh | Invoke-Expression
+        run: |
+          iwr get.scoop.sh -outfile 'install.ps1'
+          .\install.ps1 -RunAsAdmin
 
       - name: Install Redis [Windows]
         if: matrix.os == 'windows-latest'
