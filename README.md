@@ -3,6 +3,7 @@
 [![Rust: 1.62+](https://img.shields.io/badge/rust-1.62+-93450a)](https://github.com/rust-lang/rust/milestone/93)
 [![Continuous Delivery](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-delivery.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-delivery.yml)
 [![Continuous Integration](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-integration.yml)
+[![Integration Tests](https://github.com/devtomio/website-screenshot/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/integration-tests.yml)
 
 **📸 website screenshots as a service**
 
