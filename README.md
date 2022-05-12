@@ -203,7 +203,8 @@ Example Response
   "metadata": {
     "url": "https://rust-lang.org",
     "fullscreen": false,
-    "check_nsfw": false
+    "check_nsfw": false,
+    "dark_mode": false
   }
 }
 ```

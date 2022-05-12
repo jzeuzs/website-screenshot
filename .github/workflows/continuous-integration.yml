@@ -7,52 +7,6 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: Integration Tests
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: true
-      matrix:
-        name:
-          - MSRV
-          - Nightly
-          - MacOS
-          - Windows
-        
-        include:
-          - name: MSRV
-            toolchain: nightly-2022-05-04
-            os: ubuntu-latest
-
-          - name: Nightly
-            toolchain: nightly
-            os: ubuntu-latest
-
-          - name: MacOS
-            toolchain: nightly-2022-05-04
-            os: macOS-latest
-
-          - name: Windows
-            toolchain: nightly-2022-05-04
-            os: windows-latest
-
-    steps:
-      - name: Checkout the Repository
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.toolchain }}
-          override: true
-
-      - name: Install Nextest
-        uses: taiki-e/install-action@nextest
-
-      - name: Run Tests
-        run: cargo nextest run
-
   msrv:
     name: MSRV
     runs-on: ubuntu-latest

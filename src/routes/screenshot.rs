@@ -161,3 +161,84 @@ pub async fn screenshot(
         }
     })))
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use actix_web::body::to_bytes;
+    use actix_web::web::{self, Bytes};
+    use actix_web::{test, App};
+    use fantoccini::ClientBuilder;
+    use once_cell::sync::Lazy;
+    use serde_json::{from_str, json, Map, Value};
+
+    use super::*;
+    use crate::{State, Storage};
+
+    static CAPABILITIES: Lazy<Map<String, Value>> = Lazy::new(|| {
+        let mut capabilities = Map::new();
+        let chrome_opts = json!({
+            "args": [
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--headless",
+                "--whitelisted-ips="
+            ]
+        });
+
+        capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
+        capabilities
+    });
+
+    trait BodyTest {
+        fn as_str(&self) -> &str;
+        fn as_serde_value(&self) -> Value;
+    }
+
+    impl BodyTest for Bytes {
+        fn as_str(&self) -> &str {
+            unsafe { std::str::from_utf8_unchecked(self) }
+        }
+
+        fn as_serde_value(&self) -> Value {
+            from_str(self.as_str()).expect("Failed to parse json")
+        }
+    }
+
+    #[actix_web::test]
+    async fn test_screenshot() {
+        let client = ClientBuilder::rustls()
+            .capabilities(Lazy::force(&CAPABILITIES).to_owned())
+            .connect("http://localhost:9515")
+            .await
+            .expect("Failed to connect to chromedriver");
+
+        let state = web::Data::new(State {
+            browser: Arc::new(client.clone()),
+            storage: Arc::new(Storage::new()),
+            reqwest: reqwest::Client::new(),
+        });
+
+        let app = test::init_service(App::new().app_data(state.clone()).service(screenshot)).await;
+
+        let req = test::TestRequest::post()
+            .uri("/screenshot")
+            .set_json(json!({
+                "url": "https://crates.io"
+            }))
+            .to_request();
+
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(201, res.status().as_u16());
+        assert_eq!(Some("Created"), res.status().canonical_reason());
+
+        let body = to_bytes(res.into_body()).await.unwrap().as_serde_value();
+
+        assert!(body.is_object());
+
+        client.close().await.expect("Failed to close client");
+    }
+}
