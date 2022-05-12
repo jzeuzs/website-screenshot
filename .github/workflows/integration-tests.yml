@@ -51,7 +51,9 @@ jobs:
         uses: taiki-e/install-action@nextest
 
       - name: Install Redis
-        uses: supercharge/redis-github-action@1.4.0
+        uses: shogo82148/actions-setup-redis@v1
+        with:
+          redis-version: 6.x
 
       - name: Install Chrome Browser
         uses: browser-actions/setup-chrome@latest
@@ -60,6 +62,8 @@ jobs:
         uses: nanasess/setup-chromedriver@v1
 
       - name: Run Tests
-        run: cargo nextest run
+        run: |
+          chromedriver &
+          cargo nextest run
         env:
           REDIS_URL: redis://127.0.0.1:6379
