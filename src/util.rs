@@ -86,6 +86,60 @@ pub fn initialize_tracing() {
     tracing::subscriber::set_global_default(subscriber).expect("Failed to initialize logger");
 }
 
+/// Test utilities
+pub mod test {
+    use std::sync::Arc;
+
+    use actix_web::web::Data;
+    use fantoccini::{Client, ClientBuilder};
+    use once_cell::sync::Lazy;
+    use serde_json::{json, Map, Value};
+
+    use super::Result;
+    use crate::providers::Provider;
+    use crate::{State, Storage};
+
+    #[derive(Debug)]
+    pub struct ResponseError<'a>(pub &'a dyn actix_web::error::ResponseError);
+
+    impl PartialEq for ResponseError<'_> {
+        fn eq(&self, rhs: &Self) -> bool {
+            self.0.status_code() == rhs.0.status_code()
+        }
+    }
+
+    static CAPABILITIES: Lazy<Map<String, Value>> = Lazy::new(|| {
+        let mut capabilities = Map::new();
+        let chrome_opts = json!({
+            "args": [
+                "--disable-gpu",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--headless",
+                "--whitelisted-ips="
+            ]
+        });
+
+        capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
+        capabilities
+    });
+
+    pub async fn setup_with_state() -> Result<(Client, Data<State>)> {
+        let client = ClientBuilder::rustls()
+            .capabilities(Lazy::force(&CAPABILITIES).to_owned())
+            .connect("http://localhost:9515")
+            .await?;
+
+        let state = Data::new(State {
+            browser: Arc::new(client.clone()),
+            storage: Arc::new(Storage::new()),
+            reqwest: reqwest::Client::new(),
+        });
+
+        Ok((client, state))
+    }
+}
+
 pub struct RegexSearcher<'r, 't> {
     haystack: &'t str,
     it: Matches<'r, 't>,

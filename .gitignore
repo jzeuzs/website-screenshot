@@ -19,3 +19,9 @@ screenshots/*
 
 # Sled
 .website-screenshot/
+
+# Dev Utils
+start.sh
+
+# Redis Dumps
+dump.rdb

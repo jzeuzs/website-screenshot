@@ -6,7 +6,7 @@ use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use derive_more::{Display, Error as DeriveError};
 
-#[derive(Debug, Display, DeriveError)]
+#[derive(Debug, Display, DeriveError, PartialEq)]
 pub enum Error {
     #[display(fmt = "The url that you provided was invalid.")]
     InvalidUrl,
@@ -20,6 +20,12 @@ pub enum Error {
     ScreenshotNotFound,
     #[display(fmt = "The url provided is marked as NSFW.")]
     UrlNotSafeForWork,
+    #[display(fmt = "The url provided has too many redirects.")]
+    TooManyRedirects,
+    #[display(fmt = "Failed to connect to the url provided.")]
+    FailedToConnect,
+    #[display(fmt = "An error occured when accessing the website.")]
+    WebsiteError,
 }
 
 impl ResponseError for Error {
@@ -31,10 +37,14 @@ impl ResponseError for Error {
 
     fn status_code(&self) -> StatusCode {
         match self.deref() {
-            Error::InvalidUrl | Error::MissingAuthToken => StatusCode::BAD_REQUEST,
+            Error::InvalidUrl
+            | Error::MissingAuthToken
+            | Error::FailedToConnect
+            | Error::WebsiteError => StatusCode::BAD_REQUEST,
             Error::Unauthorized => StatusCode::UNAUTHORIZED,
             Error::ScreenshotNotFound => StatusCode::NOT_FOUND,
             Error::UrlNotSafeForWork => StatusCode::FORBIDDEN,
+            Error::TooManyRedirects => StatusCode::PAYLOAD_TOO_LARGE,
         }
     }
 }

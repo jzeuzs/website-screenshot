@@ -9,7 +9,6 @@ include = [
   "src/**/*",
   "evasions/*",
   "build.rs",
-  "Cross.toml",
   "LICENSE-APACHE",
   "LICENSE-MIT",
   "/README.md",

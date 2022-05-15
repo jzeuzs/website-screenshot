@@ -45,8 +45,12 @@ pub async fn screenshot(
 ) -> Result<HttpResponse, Error> {
     check_if_url(&payload.url).map_err(|_| Error::InvalidUrl)?;
 
-    let req =
-        data.reqwest.head(&payload.url).send().await.expect("Failed sending head request to url");
+    let req = data.reqwest.get(&payload.url).send().await.map_err(|e| match e {
+        err if err.is_redirect() => Error::TooManyRedirects,
+        err if err.is_connect() => Error::FailedToConnect,
+        _ => Error::WebsiteError,
+    })?;
+
     let url = req.url();
 
     if payload.check_nsfw
@@ -164,33 +168,16 @@ pub async fn screenshot(
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use actix_web::body::to_bytes;
-    use actix_web::web::{self, Bytes};
+    use actix_web::error::ResponseError as ActixResponseError;
+    use actix_web::web::Bytes;
     use actix_web::{test, App};
-    use fantoccini::ClientBuilder;
-    use once_cell::sync::Lazy;
-    use serde_json::{from_str, json, Map, Value};
+    use serde_json::{from_str, json, Value};
 
     use super::*;
-    use crate::{State, Storage};
-
-    static CAPABILITIES: Lazy<Map<String, Value>> = Lazy::new(|| {
-        let mut capabilities = Map::new();
-        let chrome_opts = json!({
-            "args": [
-                "--disable-gpu",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--headless",
-                "--whitelisted-ips="
-            ]
-        });
-
-        capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
-        capabilities
-    });
+    use crate::error::Error;
+    use crate::middlewares::Auth;
+    use crate::util::test::{setup_with_state, ResponseError};
 
     trait BodyTest {
         fn as_str(&self) -> &str;
@@ -209,20 +196,8 @@ mod tests {
 
     #[actix_web::test]
     async fn test_screenshot() {
-        let client = ClientBuilder::rustls()
-            .capabilities(Lazy::force(&CAPABILITIES).to_owned())
-            .connect("http://localhost:9515")
-            .await
-            .expect("Failed to connect to chromedriver");
-
-        let state = web::Data::new(State {
-            browser: Arc::new(client.clone()),
-            storage: Arc::new(Storage::new()),
-            reqwest: reqwest::Client::new(),
-        });
-
+        let (client, state) = setup_with_state().await.expect("Failed setting up test");
         let app = test::init_service(App::new().app_data(state.clone()).service(screenshot)).await;
-
         let req = test::TestRequest::post()
             .uri("/screenshot")
             .set_json(json!({
@@ -238,6 +213,161 @@ mod tests {
         let body = to_bytes(res.into_body()).await.unwrap().as_serde_value();
 
         assert!(body.is_object());
+
+        client.close().await.expect("Failed to close client");
+    }
+
+    #[actix_web::test]
+    async fn test_screenshot_invalid_url() {
+        let (client, state) = setup_with_state().await.expect("Failed setting up test");
+        let app = test::init_service(App::new().app_data(state.clone()).service(screenshot)).await;
+        let req = test::TestRequest::post()
+            .uri("/screenshot")
+            .set_json(json!({
+                "url": "i am an invalid url"
+            }))
+            .to_request();
+
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(400, res.status().as_u16());
+        assert_eq!(Some("Bad Request"), res.status().canonical_reason());
+        assert_eq!(
+            ResponseError(&Error::InvalidUrl as &dyn ActixResponseError),
+            ResponseError(
+                res.response().error().expect("Failed extracting error").as_response_error()
+            )
+        );
+
+        assert_eq!(
+            "The url that you provided was invalid.",
+            to_bytes(res.into_body()).await.unwrap().as_str()
+        );
+
+        client.close().await.expect("Failed to close client");
+    }
+
+    #[actix_web::test]
+    async fn test_screenshot_nsfw_url() {
+        let (client, state) = setup_with_state().await.expect("Failed setting up test");
+        let app = test::init_service(App::new().app_data(state.clone()).service(screenshot)).await;
+        let req = test::TestRequest::post()
+            .uri("/screenshot")
+            .set_json(json!({
+                "url": "https://nhentai.net",
+                "check_nsfw": true
+            }))
+            .to_request();
+
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(403, res.status().as_u16());
+        assert_eq!(Some("Forbidden"), res.status().canonical_reason());
+        assert_eq!(
+            ResponseError(&Error::UrlNotSafeForWork as &dyn ActixResponseError),
+            ResponseError(
+                res.response().error().expect("Failed extracting error").as_response_error()
+            )
+        );
+
+        assert_eq!(
+            "The url provided is marked as NSFW.",
+            to_bytes(res.into_body()).await.unwrap().as_str()
+        );
+
+        client.close().await.expect("Failed to close client");
+    }
+
+    #[actix_web::test]
+    async fn test_screenshot_auth() {
+        std::env::set_var("AUTH_TOKEN", "very_secure_token");
+
+        let (client, state) = setup_with_state().await.expect("Failed setting up test");
+        let app =
+            test::init_service(App::new().wrap(Auth).app_data(state.clone()).service(screenshot))
+                .await;
+        let req = test::TestRequest::post()
+            .uri("/screenshot")
+            .append_header(("Authorization", "very_secure_token"))
+            .set_json(json!({
+                "url": "https://crates.io"
+            }))
+            .to_request();
+
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(201, res.status().as_u16());
+        assert_eq!(Some("Created"), res.status().canonical_reason());
+
+        let body = to_bytes(res.into_body()).await.unwrap().as_serde_value();
+
+        assert!(body.is_object());
+
+        client.close().await.expect("Failed to close client");
+    }
+
+    #[actix_web::test]
+    async fn test_screenshot_auth_missing() {
+        std::env::set_var("AUTH_TOKEN", "very_secure_token");
+
+        let (client, state) = setup_with_state().await.expect("Failed setting up test");
+        let app =
+            test::init_service(App::new().wrap(Auth).app_data(state.clone()).service(screenshot))
+                .await;
+        let req = test::TestRequest::post()
+            .uri("/screenshot")
+            .set_json(json!({
+                "url": "https://crates.io"
+            }))
+            .to_request();
+
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(400, res.status().as_u16());
+        assert_eq!(Some("Bad Request"), res.status().canonical_reason());
+        assert_eq!(
+            ResponseError(&Error::MissingAuthToken as &dyn ActixResponseError),
+            ResponseError(
+                res.response().error().expect("Failed extracting error").as_response_error()
+            )
+        );
+
+        assert_eq!(
+            "Authentication was enabled but the \"Authorization\" header was not present.",
+            to_bytes(res.into_body()).await.unwrap().as_str()
+        );
+
+        client.close().await.expect("Failed to close client");
+    }
+
+    #[actix_web::test]
+    async fn test_screenshot_auth_invalid() {
+        std::env::set_var("AUTH_TOKEN", "very_secure_token");
+
+        let (client, state) = setup_with_state().await.expect("Failed setting up test");
+        let app =
+            test::init_service(App::new().wrap(Auth).app_data(state.clone()).service(screenshot))
+                .await;
+        let req = test::TestRequest::post()
+            .uri("/screenshot")
+            .append_header(("Authorization", "not_a_valid_token"))
+            .set_json(json!({
+                "url": "https://crates.io"
+            }))
+            .to_request();
+
+        let res = test::call_service(&app, req).await;
+
+        assert_eq!(401, res.status().as_u16());
+        assert_eq!(Some("Unauthorized"), res.status().canonical_reason());
+        assert_eq!(
+            ResponseError(&Error::Unauthorized as &dyn ActixResponseError),
+            ResponseError(
+                res.response().error().expect("Failed extracting error").as_response_error()
+            )
+        );
+
+        assert_eq!("Invalid token provided.", to_bytes(res.into_body()).await.unwrap().as_str());
 
         client.close().await.expect("Failed to close client");
     }
