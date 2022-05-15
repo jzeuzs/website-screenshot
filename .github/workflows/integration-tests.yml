@@ -47,6 +47,9 @@ jobs:
           toolchain: ${{ matrix.toolchain }}
           override: true
 
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v1
+
       - name: Install Nextest
         uses: taiki-e/install-action@nextest
 
