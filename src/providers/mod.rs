@@ -33,7 +33,5 @@ cfg_if! {
         mod sled;
 
         pub use self::sled::SledProvider as Storage;
-    } else {
-        panic!("Please provide a storage provider.");
     }
 }

@@ -3,11 +3,13 @@
   "markdown": {},
   "toml": {},
   "dockerfile": {},
-  "includes": ["**/*.{ts,tsx,js,jsx,cjs,mjs,md,toml,dockerfile,json}"],
+  "includes": ["**/*.{ts,tsx,js,jsx,cjs,mjs,md,toml,dockerfile,json,css}"],
   "excludes": [
     "**/node_modules",
     "**/target",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "static/swagger-ui-bundle.js",
+    "static/swagger-ui-standalone-preset.js"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.68.2.wasm",

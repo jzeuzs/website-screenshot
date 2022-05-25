@@ -164,66 +164,6 @@ cargo build --release --no-default-features --features tixte_provider
 cargo build --release --no-default-features --features sled_provider
 ```
 
-## Endpoints
-
-### **GET** `/`
-
-Hello, world!
-
-Example Response:
-
-```text
-Hello, world!
-```
-
-### **POST** `/screenshot`
-
-Creates a screenshot.
-
-#### Payload
-
-- `url` - The url of the website. (string, required)
-- `fullscreen` - If you want to take a fullscreen screenshot. (boolean, optional, overrides the `FULLSCREEN_SCREENSHOT` environment variable)
-- `check_nsfw` - If you want to check if the url is marked as NSFW. (boolean, optional, overrides the `CHECK_IF_NSFW` environment variable)
-- `dark_mode` - If you want to take a screenshot in dark mode if the website supports it. (boolean, optional, overrides the `DARK_MODE` environment variable)
-
-Example Payload:
-
-```json
-{
-  "url": "https://rust-lang.org"
-}
-```
-
-Example Response
-
-```json
-{
-  "slug": "abcdefghijk",
-  "path": "/s/abcdefghijk",
-  "metadata": {
-    "url": "https://rust-lang.org",
-    "fullscreen": false,
-    "check_nsfw": false,
-    "dark_mode": false
-  }
-}
-```
-
-### **GET** `/s/:slug`
-
-Gets the screenshot that is corresponding to the slug.
-
-Example URL
-
-```text
-http://localhost:3000/s/abcdefghijk
-```
-
-Example Response
-
-![Rust Website](screenshots/abcdefghijk.png "Rust Website")
-
 ## License
 
 Licensed under either of

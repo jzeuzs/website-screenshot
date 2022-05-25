@@ -1,0 +1,120 @@
+openapi: 3.0.0
+
+info:
+  version: '{{version}}'
+  description: 📸 website screenshots as a service
+  title: website-screenshot
+  contact:
+    name: Support
+    email: mail@tomio.fun
+    url: https://github.com/devtomio/website-screenshot/issues/new
+  license:
+    name: MIT/Apache-2.0
+    url: https://github.com/devtomio/website-screenshot#license
+
+paths:
+  /:
+    get:
+      summary: The root route
+      tags:
+        - HTTP Routes
+      operationId: rootRoute
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Hello, world!
+        '429':
+          description: Ratelimited
+
+  /screenshot:
+    post:
+      summary: Takes a screenshot of a website
+      tags:
+        - HTTP Routes
+      operationId: postScreenshot
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreenshotRequest'
+        description: Inventory item to add
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScreenshotResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '413':
+          description: Payload Too Large
+        '429':
+          description: Ratelimited
+          
+  /s/{slug}:
+    get:
+      summary: Get a screenshot
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+            example: abcdefghijk
+          required: true
+          description: The slug of the screenshot
+      tags:
+        - HTTP Routes
+      responses:
+        '200':
+          description: OK
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Not Found
+
+servers:
+  - url: '{{url}}'
+
+components:
+  schemas:
+    ScreenshotRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          example: https://rust-lang.org
+        fullscreen:
+          type: boolean
+          example: false
+        check_nsfw:
+          type: boolean
+          example: false
+        dark_mode:
+          type: boolean
+          example: false
+    ScreenshotResponse:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: abcdefghijk
+        path:
+          type: string
+          example: /s/abcdefghijk
+        metadata:
+          $ref: '#/components/schemas/ScreenshotRequest'

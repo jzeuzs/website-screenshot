@@ -1,4 +1,5 @@
 use version_check::Version;
+use static_files::resource_dir;
 
 /// Get a list of the current features enabled.
 macro_rules! get_features {
@@ -43,4 +44,6 @@ fn main() {
             features.join(", ")
         );
     }
+
+    resource_dir("./static").build().expect("Failed packing static files");
 }

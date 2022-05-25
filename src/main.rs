@@ -10,6 +10,7 @@ use std::sync::Arc;
 use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_web::middleware::Compress;
 use actix_web::{web, App, Error, HttpServer};
+use actix_web_static_files::ResourceFiles;
 use cdp::ChromeCommand;
 use evasions::*;
 use fantoccini::{Client, ClientBuilder};
@@ -38,6 +39,8 @@ pub struct State {
     pub storage: Arc<Storage>,
     pub reqwest: ReqwestClient,
 }
+
+include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
@@ -146,8 +149,9 @@ async fn main() -> anyhow::Result<()> {
         .expect("Failed issuing cmd");
 
     let governor_config = GovernorConfigBuilder::default()
-        .per_second(2)
-        .burst_size(5)
+        .per_second(60)
+        .burst_size(20)
+        .with_headers()
         .finish()
         .expect("Failed to build ratelimiter");
 
@@ -163,6 +167,8 @@ async fn main() -> anyhow::Result<()> {
     info!("Server listening at localhost:{}", port);
 
     HttpServer::new(move || {
+        let static_files = generate();
+
         App::new()
             .wrap(Compress::default())
             .wrap(middlewares::Auth)
@@ -171,7 +177,9 @@ async fn main() -> anyhow::Result<()> {
             .app_data(state.clone())
             .service(routes::screenshot_route)
             .service(routes::get_screenshot)
+            .service(routes::schema_route)
             .service(routes::index_route)
+            .service(ResourceFiles::new("/", static_files))
     })
     .bind(("0.0.0.0", port))?
     .run()
