@@ -4,7 +4,6 @@
 extern crate tracing;
 
 use std::env;
-use std::process::Stdio;
 use std::sync::Arc;
 
 use actix_web::middleware::Compress;
@@ -16,9 +15,6 @@ use fantoccini::{Client, ClientBuilder};
 use providers::{Provider, Storage};
 use reqwest::Client as ReqwestClient;
 use serde_json::{Map, Value};
-use tokio::process::Command;
-use tokio_process_stream::ProcessLineStream;
-use tokio_stream::StreamExt;
 use tracing_actix_web::TracingLogger;
 use util::{initialize_tracing, load_env};
 use website_screenshot_actix_governor::{Governor, GovernorConfigBuilder};
@@ -47,23 +43,6 @@ async fn main() -> anyhow::Result<()> {
     load_env();
     initialize_tracing();
 
-    tokio::spawn(async move {
-        let path = match env::var("CHROMEDRIVER_PATH") {
-            Ok(path) => path,
-            Err(_) => "chromedriver".to_owned(),
-        };
-
-        let mut chromedriver = Command::new(path);
-        chromedriver.stdout(Stdio::piped()).stderr(Stdio::piped());
-
-        let mut stream =
-            ProcessLineStream::try_from(chromedriver).expect("Failed to convert command to stream");
-
-        while let Some(log) = stream.next().await {
-            info!(target: "chromedriver", "{}", log);
-        }
-    });
-
     let mut capabilities = Map::new();
     let chrome_opts = match env::var("GOOGLE_CHROME_PATH") {
         Ok(path) => serde_json::json!({
@@ -89,8 +68,13 @@ async fn main() -> anyhow::Result<()> {
 
     capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);
 
+    let chromedriver_address = match env::var("CHROMEDRIVER_ADDRESS") {
+        Ok(address) => address,
+        Err(_) => "http://localhost:9515".to_owned(),
+    };
+
     let client =
-        ClientBuilder::rustls().capabilities(capabilities).connect("http://localhost:9515").await?;
+        ClientBuilder::rustls().capabilities(capabilities).connect(&chromedriver_address).await?;
 
     info!("Connected to chromedriver at localhost:9515");
 

@@ -2089,20 +2089,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-process-stream"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfe1b77e2c74925ae5a21d24d16019777206bb2f794358d786b83a31b608193c"
-dependencies = [
- "anyhow",
- "bytes 1.1.0",
- "pin-project-lite",
- "tokio",
- "tokio-stream",
- "tokio-util 0.6.9",
-]
-
-[[package]]
 name = "tokio-rustls"
 version = "0.23.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2494,8 +2480,6 @@ dependencies = [
  "sled",
  "static-files",
  "tokio",
- "tokio-process-stream",
- "tokio-stream",
  "tracing",
  "tracing-actix-web",
  "tracing-subscriber",

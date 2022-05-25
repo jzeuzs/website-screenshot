@@ -32,7 +32,7 @@
 - `FULLSCREEN_SCREENSHOT` - if set, it will screenshot the whole website (optional)
 - `CHECK_IF_NSFW` - if set, it will check if the url is marked as NSFW (optional)
 - `GOOGLE_CHROME_PATH` - the path to the chrome executable (optional)
-- `CHROMEDRIVER_PATH` - the path to the chromedriver executable (optional)
+- `CHROMEDRIVER_ADDRESS` - the address on where chromedriver is listening (optional, defaults to `http://localhost:9515`)
 - `DARK_MODE` - if set, it will take screenshots in dark mode, if the website supports it (optional)
 
 ### Railway
@@ -80,6 +80,8 @@ cargo install website-screenshot
 
 1. Clone this repository. e.g. `git clone https://github.com/devtomio/website-screenshot`
 2. Build the binary `cargo build --release`
+3. Start chromedriver in the background `chromedriver &`
+4. Run the app `./target/release/website-screenshot`
 
 ## Authentication
 

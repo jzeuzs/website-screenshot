@@ -49,4 +49,4 @@ FROM base as runner
 
 COPY --from=builder /usr/src/app/target/release/website-screenshot /usr/local/bin/website-screenshot
 
-ENTRYPOINT ["/usr/local/bin/website-screenshot"]
+ENTRYPOINT ["chromedriver", "&", "/usr/local/bin/website-screenshot"]
