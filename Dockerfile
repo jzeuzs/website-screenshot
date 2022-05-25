@@ -33,6 +33,7 @@ FROM base as builder
 COPY Cargo.lock .
 COPY Cargo.toml .
 COPY build.rs .
+COPY static/ static/
 
 RUN mkdir src && \
     echo "// blank" > src/lib.rs && \
@@ -41,7 +42,6 @@ RUN mkdir src && \
 
 COPY src/ src/
 COPY evasions/ evasions/
-COPY static/ static/
 
 RUN fleet build --release
 
