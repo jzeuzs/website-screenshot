@@ -1,5 +1,5 @@
-use version_check::Version;
 use static_files::resource_dir;
+use version_check::Version;
 
 /// Get a list of the current features enabled.
 macro_rules! get_features {
