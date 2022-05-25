@@ -34,6 +34,8 @@
 - `GOOGLE_CHROME_PATH` - the path to the chrome executable (optional)
 - `CHROMEDRIVER_ADDRESS` - the address on where chromedriver is listening (optional, defaults to `http://localhost:9515`)
 - `DARK_MODE` - if set, it will take screenshots in dark mode, if the website supports it (optional)
+- `FORCE_NSFW_CHECK` - if set, force NSFW check (optional)
+- `FORCE_DARK_MODE` - if set, force dark mode (optional)
 
 ### Railway
 

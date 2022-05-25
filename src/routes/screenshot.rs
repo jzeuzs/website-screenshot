@@ -52,8 +52,10 @@ pub async fn screenshot(
     })?;
 
     let url = req.url();
+    let check_nsfw = env::var("FORCE_NSFW_CHECK").is_ok() || payload.check_nsfw;
+    let dark_mode = env::var("FORCE_DARK_MODE").is_ok() || payload.dark_mode;
 
-    if payload.check_nsfw
+    if check_nsfw
         && check_if_nsfw(url.host_str().expect("Failed getting url host"))
             .await
             .expect("Failed checking if nsfw")
@@ -76,7 +78,7 @@ pub async fn screenshot(
         .await
         .expect("Failed hiding scrollbar");
 
-    if payload.dark_mode {
+    if dark_mode {
         client
             .issue_cmd(ChromeCommand::ExecuteCdpCommand(
                 "Emulation.setEmulatedMedia".to_owned(),
