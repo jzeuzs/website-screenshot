@@ -41,6 +41,7 @@ RUN mkdir src && \
 
 COPY src/ src/
 COPY evasions/ evasions/
+COPY static/ static/
 
 RUN fleet build --release
 
