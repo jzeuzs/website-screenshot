@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.1.0](https://github.com/devtomio/website-screenshot/compare/v1.0.0...v1.1.0) (2022-05-25)
+
+
+### Features
+
+* add `Procfile` for heroku ([93d429a](https://github.com/devtomio/website-screenshot/commit/93d429ad1ff8475095f4280a57097aeef00c546e))
+* add a self-hosted server on heroku ([ec45896](https://github.com/devtomio/website-screenshot/commit/ec4589644d779d27ffc7bf30cdb74c089164a39d))
+* add docs route ([a87ff53](https://github.com/devtomio/website-screenshot/commit/a87ff53d351f343c8646ac223d282f2692f40f3e))
+* add dprint checks ([7bb9e7c](https://github.com/devtomio/website-screenshot/commit/7bb9e7c2ab4e78c28f0dba1a7bca352662644d56))
+* add more checks to prevent mismatch ([1a11545](https://github.com/devtomio/website-screenshot/commit/1a11545c02ac1d8d820321c0d5550d05f159694d))
+* add nsfw checks ([bcc8360](https://github.com/devtomio/website-screenshot/commit/bcc83606756e226937beacc956ce4a309e1db5ab))
+* **ci:** cache deps ([931844a](https://github.com/devtomio/website-screenshot/commit/931844a9bc7c05785bc99572147bce1118fffa3d))
+* dark mode ([0ca4555](https://github.com/devtomio/website-screenshot/commit/0ca4555a5bc94c79e5a2af940f1dff7daf671a54))
+* prevent bot detection ([39f982d](https://github.com/devtomio/website-screenshot/commit/39f982dd6fc3924df36276c5bc180740f7013530))
+* remove use of `portpicker` ([b58415e](https://github.com/devtomio/website-screenshot/commit/b58415e8b6206172b2b0ab5afa99ee09050ab2ad))
+* **tests:** add basic tests ([42ce400](https://github.com/devtomio/website-screenshot/commit/42ce40002665664a76676966c8d08921a9b3b1f8))
+* use docker for heroku ([6a33b8b](https://github.com/devtomio/website-screenshot/commit/6a33b8bb70bf128af074bda676f1791537869dba))
+
+
+### Bug Fixes
+
+* add whitelisted ips option ([cc6d626](https://github.com/devtomio/website-screenshot/commit/cc6d626a8e1f0f7eb87639c0cb55feef19036763))
+* **deps:** update rust crate rayon to 1.5.3 ([#24](https://github.com/devtomio/website-screenshot/issues/24)) ([787d4e4](https://github.com/devtomio/website-screenshot/commit/787d4e4c308b6c81bc51708616e9741ff6eef858))
+* **deps:** update rust crate tokio to 1.18.2 ([#20](https://github.com/devtomio/website-screenshot/issues/20)) ([76d20ac](https://github.com/devtomio/website-screenshot/commit/76d20ac893eebea36628cd140225327e9cb49fbd))
+* heroku build ([14a7b12](https://github.com/devtomio/website-screenshot/commit/14a7b1286b4f466d0a2503bac8a76c0dd6626bf0))
+* hide scrollbar ([72c38e5](https://github.com/devtomio/website-screenshot/commit/72c38e5d099d2a470081d2a63a3d19778afb6774))
+* remove heroku ([a5b20d8](https://github.com/devtomio/website-screenshot/commit/a5b20d8843034460711c8510bf2ad3831b9999a5))
+* set remote debugging address ([410bb07](https://github.com/devtomio/website-screenshot/commit/410bb078ff7150d2ba704f78add1b9896b4639a2))
+* shorten `chrome_opts` declaration ([ac8456f](https://github.com/devtomio/website-screenshot/commit/ac8456f9b10806a21a89eece8f041f4865d039ce))
+* sleep the main thread because chromedriver may take a while ([8eb74f9](https://github.com/devtomio/website-screenshot/commit/8eb74f9a46a08a0e49d9013c206bbfc48ab40b2a))
+* wrong arg ([12ba779](https://github.com/devtomio/website-screenshot/commit/12ba77987be21d4ceb32f20d7f10b4a7528c5325))
+
 ## [1.0.0](https://github.com/devtomio/website-screenshot/compare/v0.1.1...v1.0.0) (2022-05-04)
 
 
