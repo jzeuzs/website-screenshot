@@ -6,7 +6,7 @@ use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use derive_more::{Display, Error as DeriveError};
 
-#[derive(Debug, Display, DeriveError, PartialEq)]
+#[derive(Debug, Display, DeriveError, PartialEq, Eq)]
 pub enum Error {
     #[display(fmt = "The url that you provided was invalid.")]
     InvalidUrl,
