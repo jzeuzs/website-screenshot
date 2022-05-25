@@ -7,7 +7,6 @@ use std::env;
 use std::process::Stdio;
 use std::sync::Arc;
 
-use actix_governor::{Governor, GovernorConfigBuilder};
 use actix_web::middleware::Compress;
 use actix_web::{web, App, Error, HttpServer};
 use actix_web_static_files::ResourceFiles;
@@ -22,6 +21,7 @@ use tokio_process_stream::ProcessLineStream;
 use tokio_stream::StreamExt;
 use tracing_actix_web::TracingLogger;
 use util::{initialize_tracing, load_env};
+use website_screenshot_actix_governor::{Governor, GovernorConfigBuilder};
 
 pub mod cdp;
 pub mod error;

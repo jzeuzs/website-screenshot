@@ -20,17 +20,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "actix-governor"
-version = "0.3.0"
-source = "git+https://github.com/TheAwiteb/actix-governor?branch=ratelimit-headers#80648d9457136b4a6d35054b42b2ba66f432dca0"
-dependencies = [
- "actix-http",
- "actix-web",
- "futures",
- "governor",
-]
-
-[[package]]
 name = "actix-http"
 version = "3.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2480,9 +2469,8 @@ dependencies = [
 
 [[package]]
 name = "website-screenshot"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
- "actix-governor",
  "actix-web",
  "actix-web-static-files",
  "anyhow",
@@ -2513,6 +2501,19 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "version_check",
+ "website-screenshot-actix-governor",
+]
+
+[[package]]
+name = "website-screenshot-actix-governor"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7834d34bee921b974a2f3c1e670ea03bf15a9b910ba091fe400daec900554d29"
+dependencies = [
+ "actix-http",
+ "actix-web",
+ "futures",
+ "governor",
 ]
 
 [[package]]

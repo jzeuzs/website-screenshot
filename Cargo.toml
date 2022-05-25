@@ -1,6 +1,6 @@
 [package]
 name = "website-screenshot"
-version = "1.1.0"
+version = "1.2.0"
 authors = ["Tomio <mail@tomio.fun>"]
 build = "build.rs"
 categories = ["caching", "command-line-utilities", "database-implementations", "web-programming"]
@@ -42,6 +42,7 @@ tokio-stream = "0.1.8"
 tracing = "0.1.34"
 tracing-actix-web = "0.5.1"
 url = "2.2.2"
+website-screenshot-actix-governor = "0.3.0"
 
 [dependencies.tokio]
 version = "1.18.2"
@@ -68,10 +69,6 @@ features = ["rustls-tls", "json"]
 [dependencies.tracing-subscriber]
 version = "0.3.11"
 features = ["env-filter"]
-
-[dependencies.actix-governor]
-git = "https://github.com/TheAwiteb/actix-governor"
-branch = "ratelimit-headers"
 
 [dependencies.rust-s3]
 version = "0.31.0"
