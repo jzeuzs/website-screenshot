@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/devtomio/website-screenshot/compare/v1.1.0...v1.2.0) (2022-05-25)
+
+
+### Features
+
+* allow administrators to force nsfw checks or dark mode ([a6a9ca9](https://github.com/devtomio/website-screenshot/commit/a6a9ca99369adb2131e0002e58da582c10fb678b))
+* let the user provide the chromedriver address ([24e82e2](https://github.com/devtomio/website-screenshot/commit/24e82e23253426e8f5a17df8331d3d2183859792))
+
+
+### Bug Fixes
+
+* **ci:** fix docker image ([c6d92a8](https://github.com/devtomio/website-screenshot/commit/c6d92a8832ded7782769a6ffb2dbbe9b2b76979e))
+* **ci:** fix publishing to crates.io ([942c822](https://github.com/devtomio/website-screenshot/commit/942c822d62dbac68924583c8618e2b285ae794bd))
+
 ## [1.1.0](https://github.com/devtomio/website-screenshot/compare/v1.0.0...v1.1.0) (2022-05-25)
 
 
