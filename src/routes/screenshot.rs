@@ -13,6 +13,16 @@ use crate::util::{check_if_nsfw, check_if_url};
 use crate::{Result, State};
 
 #[inline]
+fn default_width() -> u32 {
+    1920
+}
+
+#[inline]
+fn default_height() -> u32 {
+    1080
+}
+
+#[inline]
 fn default_fullscreen() -> bool {
     env::var("FULLSCREEN_SCREENSHOT").is_ok()
 }
@@ -30,6 +40,10 @@ fn default_dark_mode() -> bool {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RequestData {
     url: String,
+    #[serde(default = "default_width")]
+    width: u32,
+    #[serde(default = "default_height")]
+    height: u32,
     #[serde(default = "default_fullscreen")]
     fullscreen: bool,
     #[serde(default = "default_check_nsfw")]
@@ -50,7 +64,8 @@ pub async fn screenshot(
         err if err.is_connect() => Error::FailedToConnect,
         _ => Error::WebsiteError,
     })?;
-
+    let width = payload.width;
+    let height = payload.height;
     let url = req.url();
     let check_nsfw = env::var("FORCE_NSFW_CHECK").is_ok() || payload.check_nsfw;
     let dark_mode = env::var("FORCE_DARK_MODE").is_ok() || payload.dark_mode;
@@ -66,7 +81,7 @@ pub async fn screenshot(
     let client = &data.browser;
 
     client.goto(url.as_str()).await.expect("Failed navigating to site");
-    client.set_window_size(1980, 1080).await.expect("Failed setting window size");
+    client.set_window_size(width, height).await.expect("Failed setting window size");
     client
         .execute(
             "\
