@@ -64,6 +64,7 @@ pub async fn screenshot(
         err if err.is_connect() => Error::FailedToConnect,
         _ => Error::WebsiteError,
     })?;
+
     let width = payload.width;
     let height = payload.height;
     let url = req.url();
