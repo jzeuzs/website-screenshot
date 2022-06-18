@@ -65,8 +65,8 @@ pub async fn screenshot(
 
     let client = &data.browser;
 
-    client.goto(url.as_str()).await.expect("Failed navigating to site");
-    client.set_window_size(1980, 1080).await.expect("Failed setting window size");
+    client.goto(url.as_str()).await.map_err(|_| Error::WebsiteError)?;
+    client.set_window_size(1980, 1080).await.map_err(|_| Error::InvalidWindowSize)?;
     client
         .execute(
             "\
