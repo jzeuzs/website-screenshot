@@ -70,14 +70,6 @@ See the [Releases page](https://github.com/devtomio/website-screenshot/releases)
 
 A dockerized version of this application is available [here](https://github.com/devtomio/website-screenshot/pkgs/container/website-screenshot).
 
-### [Cargo](https://crates.io/crates/website-screenshot)
-
-Installing `website-screenshot` as a crate.
-
-```sh
-cargo install website-screenshot
-```
-
 ### Building from source
 
 1. Clone this repository. e.g. `git clone https://github.com/devtomio/website-screenshot`
