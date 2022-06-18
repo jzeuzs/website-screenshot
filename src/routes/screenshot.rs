@@ -65,8 +65,6 @@ pub async fn screenshot(
         _ => Error::WebsiteError,
     })?;
 
-    let width = payload.width;
-    let height = payload.height;
     let url = req.url();
     let check_nsfw = env::var("FORCE_NSFW_CHECK").is_ok() || payload.check_nsfw;
     let dark_mode = env::var("FORCE_DARK_MODE").is_ok() || payload.dark_mode;
@@ -82,7 +80,7 @@ pub async fn screenshot(
     let client = &data.browser;
 
     client.goto(url.as_str()).await.expect("Failed navigating to site");
-    client.set_window_size(width, height).await.expect("Failed setting window size");
+    client.set_window_size(payload.width, payload.height).await.expect("Failed setting window size");
     client
         .execute(
             "\
