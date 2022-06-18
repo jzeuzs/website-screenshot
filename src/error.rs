@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use actix_web::error::ResponseError;
 use actix_web::http::header::ContentType;
 use actix_web::http::StatusCode;
@@ -26,6 +24,8 @@ pub enum Error {
     FailedToConnect,
     #[display(fmt = "An error occured when accessing the website.")]
     WebsiteError,
+    #[display(fmt = "You provided an invalid window size.")]
+    InvalidWindowSize,
 }
 
 impl ResponseError for Error {
@@ -36,11 +36,12 @@ impl ResponseError for Error {
     }
 
     fn status_code(&self) -> StatusCode {
-        match self.deref() {
+        match self {
             Error::InvalidUrl
             | Error::MissingAuthToken
             | Error::FailedToConnect
-            | Error::WebsiteError => StatusCode::BAD_REQUEST,
+            | Error::WebsiteError
+            | Error::InvalidWindowSize => StatusCode::BAD_REQUEST,
             Error::Unauthorized => StatusCode::UNAUTHORIZED,
             Error::ScreenshotNotFound => StatusCode::NOT_FOUND,
             Error::UrlNotSafeForWork => StatusCode::FORBIDDEN,

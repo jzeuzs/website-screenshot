@@ -14,7 +14,7 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: google-github-actions/release-please-action@0dbbfb021aab097f9e5c86c7387d0cc10d3edab7 # tag=v3
+      - uses: google-github-actions/release-please-action@141edfb4d3a003bc1723056c9ab59ba000ec22c8 # tag=v3
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -128,25 +128,6 @@ jobs:
         with:
           files: website-screenshot-*/website-screenshot-*
           tag_name: ${{ needs.release_please.outputs.tag_name }}
-
-  cargo_publish:
-    name: Publish Cargo Package
-    runs-on: ubuntu-latest
-    needs: release_please
-    if: ${{ needs.release_please.outputs.release_created == 'true' }}
-    steps:
-      - name: Checkout the Repository
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
-
-      - name: Install Rust
-        uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1.0.7
-        with:
-          toolchain: nightly
-          profile: minimal
-          override: true
-
-      - name: Publish to crates.io
-        run: cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
 
   publish_docker:
     name: Publish website-screenshot image

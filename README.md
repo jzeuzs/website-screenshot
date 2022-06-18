@@ -36,6 +36,7 @@
 - `DARK_MODE` - if set, it will take screenshots in dark mode, if the website supports it (optional)
 - `FORCE_NSFW_CHECK` - if set, force NSFW check (optional)
 - `FORCE_DARK_MODE` - if set, force dark mode (optional)
+- `CHROME_FLAGS` - additional flags to provide to chrome (optional, example: `--a,--b,-c`)
 
 ### Railway
 
@@ -69,14 +70,6 @@ See the [Releases page](https://github.com/devtomio/website-screenshot/releases)
 **⚠️- You can't change the provider when using the docker image.**
 
 A dockerized version of this application is available [here](https://github.com/devtomio/website-screenshot/pkgs/container/website-screenshot).
-
-### [Cargo](https://crates.io/crates/website-screenshot)
-
-Installing `website-screenshot` as a crate.
-
-```sh
-cargo install website-screenshot
-```
 
 ### Building from source
 

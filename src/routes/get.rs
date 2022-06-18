@@ -21,6 +21,6 @@ pub async fn get_screenshot(
 
     Ok(HttpResponse::Ok()
         .content_type("image/png")
-        .append_header(header::CacheControl(vec![header::CacheDirective::MaxAge(31536000)]))
+        .append_header(header::CacheControl(vec![header::CacheDirective::MaxAge(31_536_000)]))
         .body(screenshot))
 }

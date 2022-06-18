@@ -34,6 +34,7 @@ COPY Cargo.lock .
 COPY Cargo.toml .
 COPY build.rs .
 COPY static/ static/
+COPY openapi.yml .
 
 RUN mkdir src && \
     echo "// blank" > src/lib.rs && \
