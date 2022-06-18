@@ -112,44 +112,43 @@ pub async fn screenshot(
 
     client.refresh().await.expect("Failed to refresh");
 
-    let screenshot = match payload.fullscreen {
-        true => {
-            let original_size = client.get_window_size().await.expect("Failed to get window size");
-            let width = client
-                .execute("return document.body.parentNode.scrollWidth", vec![])
-                .await
-                .expect("Failed getting scroll width")
-                .as_u64()
-                .expect("Failed to convert to u64");
+    let screenshot = if payload.fullscreen {
+        let original_size = client.get_window_size().await.expect("Failed to get window size");
+        let width = client
+            .execute("return document.body.parentNode.scrollWidth", vec![])
+            .await
+            .expect("Failed getting scroll width")
+            .as_u64()
+            .expect("Failed to convert to u64");
 
-            let height = client
-                .execute("return document.body.parentNode.scrollHeight", vec![])
-                .await
-                .expect("Failed getting scroll height")
-                .as_u64()
-                .expect("Failed to convert to u64");
+        let height = client
+            .execute("return document.body.parentNode.scrollHeight", vec![])
+            .await
+            .expect("Failed getting scroll height")
+            .as_u64()
+            .expect("Failed to convert to u64");
 
-            client
-                .set_window_size(width as u32, height as u32)
-                .await
-                .expect("Failed setting window size");
+        client
+            .set_window_size(width as u32, height as u32)
+            .await
+            .expect("Failed setting window size");
 
-            let ss = client
-                .find(Locator::Css("body"))
-                .await
-                .expect("Failed finding body element")
-                .screenshot()
-                .await
-                .expect("Failed screenshoting page");
+        let ss = client
+            .find(Locator::Css("body"))
+            .await
+            .expect("Failed finding body element")
+            .screenshot()
+            .await
+            .expect("Failed screenshoting page");
 
-            client
-                .set_window_size(original_size.0 as u32, original_size.1 as u32)
-                .await
-                .expect("Failed setting window size");
+        client
+            .set_window_size(original_size.0 as u32, original_size.1 as u32)
+            .await
+            .expect("Failed setting window size");
 
-            ss
-        },
-        false => client.screenshot().await.expect("Failed screenshoting page"),
+        ss
+    } else {
+        client.screenshot().await.expect("Failed screenshoting page")
     };
 
     let slug = slug().expect("Failed generating slug");

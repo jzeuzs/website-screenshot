@@ -1,8 +1,20 @@
 #![feature(let_chains, pattern)]
+#![warn(clippy::pedantic)]
+#![allow(
+    clippy::unreadable_literal,
+    clippy::module_name_repetitions,
+    clippy::unused_async,
+    clippy::too_many_lines,
+    clippy::cast_possible_truncation,
+    clippy::missing_errors_doc,
+    clippy::must_use_candidate,
+    clippy::wildcard_imports
+)]
 
 #[macro_use]
 extern crate tracing;
 
+use std::borrow::ToOwned;
 use std::env;
 use std::sync::Arc;
 
@@ -10,7 +22,24 @@ use actix_web::middleware::Compress;
 use actix_web::{web, App, Error, HttpServer};
 use actix_web_static_files::ResourceFiles;
 use cdp::ChromeCommand;
-use evasions::*;
+use evasions::{
+    evaluate_on_new_document,
+    CHROME_APP,
+    CHROME_CSI,
+    CHROME_LOADTIMES,
+    CHROME_RUNTIME,
+    IFRAME_CONTENTWINDOW,
+    MEDIA_CODECS,
+    NAVIGATOR_HARDWARECONCURRENCY,
+    NAVIGATOR_LANGUAGES,
+    NAVIGATOR_PERMISSIONS,
+    NAVIGATOR_PLUGINS,
+    NAVIGATOR_VENDOR,
+    NAVIGATOR_WEBDRIVER,
+    UTILS,
+    WEBGL_VENDOR,
+    WINDOW_OUTERDIMENSIONS,
+};
 use fantoccini::{Client, ClientBuilder};
 use providers::{Provider, Storage};
 use reqwest::Client as ReqwestClient;
@@ -44,26 +73,27 @@ async fn main() -> anyhow::Result<()> {
     initialize_tracing();
 
     let mut capabilities = Map::new();
+    let mut args = vec![
+        "--disable-gpu".to_owned(),
+        "--no-sandbox".to_owned(),
+        "--disable-dev-shm-usage".to_owned(),
+        "--headless".to_owned(),
+        "--hide-scrollbars".to_owned(),
+        "--whitelisted-ips=".to_owned(),
+    ];
+
+    if let Ok(flags) = env::var("CHROME_FLAGS") {
+        let flags = flags.split(',').map(ToOwned::to_owned).collect::<Vec<_>>();
+
+        args.extend_from_slice(&flags);
+    };
+
     let chrome_opts = match env::var("GOOGLE_CHROME_PATH") {
         Ok(path) => serde_json::json!({
             "binary": path,
-            "args": [
-                "--disable-gpu",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--headless",
-                "--whitelisted-ips="
-            ]
+            "args": args
         }),
-        Err(_) => serde_json::json!({
-            "args": [
-                "--disable-gpu",
-                "--no-sandbox",
-                "--disable-dev-shm-usage",
-                "--headless",
-                "--whitelisted-ips="
-            ]
-        }),
+        Err(_) => serde_json::json!({ "args": args }),
     };
 
     capabilities.insert("goog:chromeOptions".to_owned(), chrome_opts);

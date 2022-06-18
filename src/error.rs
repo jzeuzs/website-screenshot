@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use actix_web::error::ResponseError;
 use actix_web::http::header::ContentType;
 use actix_web::http::StatusCode;
@@ -38,7 +36,7 @@ impl ResponseError for Error {
     }
 
     fn status_code(&self) -> StatusCode {
-        match self.deref() {
+        match self {
             Error::InvalidUrl
             | Error::MissingAuthToken
             | Error::FailedToConnect

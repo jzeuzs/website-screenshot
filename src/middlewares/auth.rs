@@ -60,23 +60,23 @@ where
                     let auth = auth.to_str().expect("Failed converting to str").to_owned();
 
                     if auth_token != auth {
-                        let res = HttpResponse::from_error(Errors::Unauthorized)
+                        let response = HttpResponse::from_error(Errors::Unauthorized)
                             .map_into_right_body::<B>();
 
-                        return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
+                        return Box::pin(async { Ok(ServiceResponse::new(req, response)) });
                     }
                 },
                 None => {
-                    let res = HttpResponse::from_error(Errors::MissingAuthToken)
+                    let response = HttpResponse::from_error(Errors::MissingAuthToken)
                         .map_into_right_body::<B>();
 
-                    return Box::pin(async { Ok(ServiceResponse::new(req, res)) });
+                    return Box::pin(async { Ok(ServiceResponse::new(req, response)) });
                 },
             };
         }
 
-        let res = self.service.call(ServiceRequest::from_parts(req, pl));
+        let response = self.service.call(ServiceRequest::from_parts(req, pl));
 
-        Box::pin(async move { res.await.map(ServiceResponse::map_into_left_body) })
+        Box::pin(async move { response.await.map(ServiceResponse::map_into_left_body) })
     }
 }

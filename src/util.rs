@@ -15,7 +15,7 @@ use tracing_subscriber::FmtSubscriber;
 static URL_REGEX: OnceCell<Regex> = OnceCell::new();
 static NSFW_SITE_LIST: sync::OnceCell<Vec<String>> = sync::OnceCell::const_new();
 
-async fn get_nsfw_list() -> Result<Vec<String>> {
+async fn get_nsfw_list<'a>() -> Result<&'a Vec<String>> {
     let list = NSFW_SITE_LIST
         .get_or_init(|| async {
             let text = reqwest::get("https://blocklistproject.github.io/Lists/porn.txt")
@@ -36,8 +36,7 @@ async fn get_nsfw_list() -> Result<Vec<String>> {
                 })
                 .collect()
         })
-        .await
-        .to_owned();
+        .await;
 
     Ok(list)
 }
@@ -48,14 +47,13 @@ pub async fn check_if_nsfw(host: &str) -> Result<bool> {
     Ok(list.par_iter().any(|s| s == host))
 }
 
-fn get_url_regex() -> Result<Regex> {
+fn get_url_regex<'a>() -> Result<&'a Regex> {
     let re = URL_REGEX
         .get_or_try_init(|| {
             let re = r"(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})";
 
             Regex::with_flags(re, "i")
-        })?
-        .to_owned();
+        })?;
 
     Ok(re)
 }
@@ -63,9 +61,10 @@ fn get_url_regex() -> Result<Regex> {
 pub fn check_if_url(url: &str) -> Result<bool> {
     let re = get_url_regex()?;
 
-    match re.find(url).is_some() {
-        true => Ok(true),
-        false => Err(anyhow::anyhow!("url not valid")),
+    if re.find(url).is_some() {
+        Ok(true)
+    } else {
+        Err(anyhow::anyhow!("url not valid"))
     }
 }
 
@@ -126,7 +125,7 @@ pub mod test {
 
     pub async fn setup_with_state() -> Result<(Client, Data<State>)> {
         let client = ClientBuilder::rustls()
-            .capabilities(Lazy::force(&CAPABILITIES).to_owned())
+            .capabilities(Lazy::force(&CAPABILITIES).clone())
             .connect("http://localhost:9515")
             .await?;
 

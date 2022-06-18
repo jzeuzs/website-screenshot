@@ -36,6 +36,7 @@
 - `DARK_MODE` - if set, it will take screenshots in dark mode, if the website supports it (optional)
 - `FORCE_NSFW_CHECK` - if set, force NSFW check (optional)
 - `FORCE_DARK_MODE` - if set, force dark mode (optional)
+- `CHROME_FLAGS` - additional flags to provide to chrome (optional, example: `--a,--b,-c`)
 
 ### Railway
 

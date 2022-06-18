@@ -87,21 +87,21 @@ impl WebDriverCompatibleCommand for ChromeCommand {
         match &self {
             ChromeCommand::LaunchApp(app_id) => {
                 method = Method::POST;
-                body = Some(json!({ "id": app_id }).to_string())
+                body = Some(json!({ "id": app_id }).to_string());
             },
             ChromeCommand::SetNetworkConditions(conditions) => {
                 method = Method::POST;
-                body = Some(json!({ "network_conditions": conditions }).to_string())
+                body = Some(json!({ "network_conditions": conditions }).to_string());
             },
             ChromeCommand::ExecuteCdpCommand(command, params) => {
                 method = Method::POST;
-                body = Some(json!({"cmd": command, "params": params }).to_string())
+                body = Some(json!({"cmd": command, "params": params }).to_string());
             },
             ChromeCommand::SetSinkToUse(sink_name)
             | ChromeCommand::StartTabMirroring(sink_name)
             | ChromeCommand::StopCasting(sink_name) => {
                 method = Method::POST;
-                body = Some(json!({ "sinkName": sink_name }).to_string())
+                body = Some(json!({ "sinkName": sink_name }).to_string());
             },
             _ => {},
         }
