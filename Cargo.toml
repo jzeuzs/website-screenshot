@@ -24,7 +24,7 @@ description = "📸 website screenshots as a service"
 [dependencies]
 actix-web = "4.1.0"
 actix-web-static-files = "4.0.0"
-anyhow = "1.0.57"
+anyhow = "1.0.58"
 async-trait = "0.1.56"
 cfg-if = "1.0.0"
 cuid = "1.2.0"
