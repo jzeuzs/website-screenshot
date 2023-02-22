@@ -118,7 +118,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download the artifacts
-        uses: actions/download-artifact@fb598a63ae348fa914e94cd0ff38f362e927b741 # tag=v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3
 
       - name: Setup the Checksums
         run: for file in website-screenshot-*/website-screenshot-*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
