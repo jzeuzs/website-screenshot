@@ -16,24 +16,34 @@ jobs:
         name:
           - MSRV
           - Nightly
+          - Stable
+          - Beta
           - MacOS
           - Windows
         
         include:
           - name: MSRV
-            toolchain: nightly-2022-05-04
+            toolchain: 1.61
             os: ubuntu-latest
 
           - name: Nightly
-            toolchain: nightly
+            toolchain: stable
+            os: ubuntu-latest
+
+          - name: Stable
+            toolchain: stable
+            os: ubuntu-latest
+
+          - name: Beta
+            toolchain: beta
             os: ubuntu-latest
 
           - name: MacOS
-            toolchain: nightly-2022-05-04
+            toolchain: stable
             os: macOS-latest
 
           - name: Windows
-            toolchain: nightly-2022-05-04
+            toolchain: stable
             os: windows-latest
 
     steps:

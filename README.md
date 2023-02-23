@@ -1,6 +1,6 @@
 # website-screenshot
 
-[![Rust: 1.62+](https://img.shields.io/badge/rust-1.62+-93450a)](https://github.com/rust-lang/rust/milestone/93)
+[![Rust: 1.61+](https://img.shields.io/badge/rust-1.61+-93450a)](https://blog.rust-lang.org/2022/05/19/Rust-1.61.0.html)
 [![Continuous Delivery](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-delivery.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-delivery.yml)
 [![Continuous Integration](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/continuous-integration.yml)
 [![Integration Tests](https://github.com/devtomio/website-screenshot/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/devtomio/website-screenshot/actions/workflows/integration-tests.yml)
@@ -20,7 +20,7 @@
 
 ### Prerequisites
 
-- [Rust] nightly 1.62+ or greater
+- [Rust] 1.61 or greater
 - [Redis] 6 or greater
 - [Chrome] browser
 - [Chromedriver] (must match with the version your [Chrome] browser)

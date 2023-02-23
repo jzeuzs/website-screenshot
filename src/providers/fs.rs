@@ -50,8 +50,8 @@ impl Provider for FsProvider {
     }
 
     async fn set(&self, slug: String, data: Vec<u8>) -> Result<()> {
-        let file_name = format!("{}.png", slug);
-        let file_path = format!("screenshots/{}", file_name);
+        let file_name = format!("{slug}.png");
+        let file_path = format!("screenshots/{file_name}");
         let mut file = File::create(&file_path).await?;
         let mut con = self.redis.get_async_connection().await?;
 

@@ -18,7 +18,7 @@ jobs:
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           profile: minimal
-          toolchain: nightly-2022-05-04
+          toolchain: 1.61
           override: true
 
       - name: Verify the MSRV
@@ -61,7 +61,7 @@ jobs:
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # tag=v1
         with:
           profile: minimal
-          toolchain: nightly
+          toolchain: stable
           override: true
       
       - name: Cache dependencies
