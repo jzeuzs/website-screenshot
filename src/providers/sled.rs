@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use async_trait::async_trait;
-use cuid::cuid;
+use cuid2::create_id;
 use redis::{AsyncCommands, Client};
 use sled::Db;
 
@@ -49,7 +49,7 @@ impl Provider for SledProvider {
 
     async fn set(&self, slug: String, data: Vec<u8>) -> Result<()> {
         let mut con = self.redis.get_async_connection().await?;
-        let key = cuid()?;
+        let key = create_id();
 
         con.set(format!("{}:{slug}", SledProvider::prefix()), &key).await?;
         self.db.insert(key, data)?;
