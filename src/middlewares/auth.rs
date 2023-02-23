@@ -54,9 +54,9 @@ where
         let auth_header = headers.get(header::AUTHORIZATION);
         let (req, pl) = req.into_parts();
 
-        if let Some(auth_token) = auth_token && req.path() == "/screenshot" {
-            match auth_header {
-                Some(auth) => {
+        if let Some(auth_token) = auth_token {
+            if req.path() == "/screenshot" {
+                if let Some(auth) = auth_header {
                     let auth = auth.to_str().expect("Failed converting to str").to_owned();
 
                     if auth_token != auth {
@@ -65,14 +65,13 @@ where
 
                         return Box::pin(async { Ok(ServiceResponse::new(req, response)) });
                     }
-                },
-                None => {
+                } else {
                     let response = HttpResponse::from_error(Errors::MissingAuthToken)
                         .map_into_right_body::<B>();
 
                     return Box::pin(async { Ok(ServiceResponse::new(req, response)) });
-                },
-            };
+                }
+            }
         }
 
         let response = self.service.call(ServiceRequest::from_parts(req, pl));
