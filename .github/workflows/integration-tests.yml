@@ -23,7 +23,7 @@ jobs:
         
         include:
           - name: MSRV
-            toolchain: 1.60
+            toolchain: 1.61
             os: ubuntu-latest
 
           - name: Nightly
