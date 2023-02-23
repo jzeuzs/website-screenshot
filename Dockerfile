@@ -21,10 +21,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip && \
     unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
-# Fleet
-RUN cargo install fleet-rs && \
-    cargo install sccache
-
 ENV DISPLAY=:99
 ENTRYPOINT ["dumb-init", "--"]
 
@@ -38,13 +34,13 @@ COPY openapi.yml .
 
 RUN mkdir src && \
     echo "// blank" > src/lib.rs && \
-    fleet build --release && \
+    cargo build --release && \
     rm -r src
 
 COPY src/ src/
 COPY evasions/ evasions/
 
-RUN fleet build --release
+RUN cargo build --release
 
 FROM base as runner
 
