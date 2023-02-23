@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.0](https://github.com/devtomio/website-screenshot/compare/v1.2.0...v2.0.0) (2023-02-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove cargo releases
+
+### Features
+
+* add ability to add additional chrome flags (closes [#36](https://github.com/devtomio/website-screenshot/issues/36)) ([c1dfb04](https://github.com/devtomio/website-screenshot/commit/c1dfb047fb93628213d3a8b5de8ee904a33c0308))
+* add more errors ([bcb7e12](https://github.com/devtomio/website-screenshot/commit/bcb7e12587a395d069bbf99208f717f078aae7a8))
+* add width/height to /screenshot POST request ([#38](https://github.com/devtomio/website-screenshot/issues/38)) ([886a21b](https://github.com/devtomio/website-screenshot/commit/886a21b4f01a54531787a8e599ec0ec3bbbf199e))
+* change msrv to `1.61` ([#53](https://github.com/devtomio/website-screenshot/issues/53)) ([f226ace](https://github.com/devtomio/website-screenshot/commit/f226acecee02164b9eab40114a5f27db2842a880))
+
+
+### Bug Fixes
+
+* **deps:** update all non-major dependencies ([#35](https://github.com/devtomio/website-screenshot/issues/35)) ([4888f1d](https://github.com/devtomio/website-screenshot/commit/4888f1da326d9bab230917c4545a997b93b14bc0))
+* **deps:** update all non-major dependencies ([#42](https://github.com/devtomio/website-screenshot/issues/42)) ([8778945](https://github.com/devtomio/website-screenshot/commit/87789456f7e8569218e40b04253b2c609139583e))
+* **deps:** update all non-major dependencies ([#50](https://github.com/devtomio/website-screenshot/issues/50)) ([552e18e](https://github.com/devtomio/website-screenshot/commit/552e18ec9497d7de0bddef16a3cd32d21392916c))
+* **deps:** update rust crate anyhow to 1.0.58 ([#40](https://github.com/devtomio/website-screenshot/issues/40)) ([803069d](https://github.com/devtomio/website-screenshot/commit/803069daac68ac7933069b5215af871e90668b40))
+* remove cargo releases ([308332e](https://github.com/devtomio/website-screenshot/commit/308332e9709b75d673b6ebce06bf1d29eaffc785))
+
 ## [1.2.0](https://github.com/devtomio/website-screenshot/compare/v1.1.0...v1.2.0) (2022-05-25)
 
 
