@@ -1,4 +1,3 @@
-#![feature(let_chains, pattern)]
 #![warn(clippy::pedantic)]
 #![allow(
     clippy::unreadable_literal,
@@ -52,6 +51,7 @@ pub mod cdp;
 pub mod error;
 pub mod evasions;
 pub mod middlewares;
+pub mod pattern;
 pub mod providers;
 pub mod routes;
 pub mod util;

@@ -1,7 +1,7 @@
 use std::env;
 
 use actix_web::{post, web, HttpResponse};
-use cuid::slug;
+use cuid2::create_id;
 use fantoccini::Locator;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -79,9 +79,11 @@ pub async fn screenshot(
 
     let client = &data.browser;
 
-
     client.goto(url.as_str()).await.expect("Failed navigating to site");
-    client.set_window_size(payload.width, payload.height).await.expect("Failed setting window size");
+    client
+        .set_window_size(payload.width, payload.height)
+        .await
+        .expect("Failed setting window size");
 
     client
         .execute(
@@ -167,7 +169,7 @@ pub async fn screenshot(
         client.screenshot().await.expect("Failed screenshoting page")
     };
 
-    let slug = slug().expect("Failed generating slug");
+    let slug = create_id();
 
     data.storage.set(slug.clone(), screenshot).await.expect("Failed setting image");
 
